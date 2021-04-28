@@ -55,11 +55,14 @@ function LoginForm() {
   const loginSchema = yup.object().shape({
     username: yup
       .string()
-      .matches(/^[A-Z]\d{2}\/\d{5}\/\d{2}$/, "enter a valid username")
+      .matches(
+        /^([A-Z]\d{2}\/\d{5}\/\d{2})|([A-Z]\d{9}[A-Z])$/,
+        "enter a valid username"
+      )
       .required("please enter your unsername"),
     password: yup.string().required("please enter your password"),
   });
-  
+
   const requestHeader = {
     method: "POST",
     mode: "cors",
@@ -75,11 +78,13 @@ function LoginForm() {
       const result = await response.json();
       setToken(result);
       setIsLoading(false);
+      console.log(result);
       if (!response.ok) {
         alert("Please try agains! Invalid username and password");
-        errors = "Invalid credential";
+        // errors = "Invalid credential";
       }
     } catch (errors) {
+      console.log(errors);
       setIsLoading(false);
       setFetchErrors(errors);
     }
@@ -97,7 +102,7 @@ function LoginForm() {
 
   const submitForm = (inputData) => {
     setUserData(inputData);
-    console.log(inputData);
+    // console.log(inputData);
     fetchData();
   };
 

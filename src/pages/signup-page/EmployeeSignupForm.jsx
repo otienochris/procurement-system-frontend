@@ -4,16 +4,16 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import CustomTextField from "../../components/customControls/CustomTextField";
 import CustomButton from "../../components/customControls/CustomButton";
+import { requestHeader } from "./index";
 import {
   FormControl,
   FormHelperText,
-  Grid,
   InputLabel,
   makeStyles,
   Select,
 } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   container: {
     minHeight: "85vh",
     width: "100vw",
@@ -33,18 +33,23 @@ const useStyles = makeStyles((theme) => ({
   formStyle: {
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
+    maxWidth: "60%",
+    minHeight: "80%",
   },
 }));
 
-function EmployeeSignupForm() {
+const url = "http://192.168.137.1:8080/api/v1/employees/";
+
+function EmployeeSignupForm(props) {
+  const { postData } = props;
   const classes = useStyles();
   const schema = yup.object().shape({
-    fullName: yup
+    name: yup
       .string()
       .min(6, "name must be at least 5 characters")
       .max(50, "name cannot exceed 8 characters")
       .required("name cannot be empty"),
-    employmentId: yup
+    empId: yup
       .string()
       .matches(/^[A-Z]\d{2}\/\d{5}\/\d{2}$/, "enter a valid employment id")
       .required(),
@@ -52,8 +57,10 @@ function EmployeeSignupForm() {
     position: yup.string().required(),
     password: yup
       .string()
-      .min(8, "password must be between 8 and 12")
-      .max(12, "password must be between 8 and 12")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "password must be of legth 8+, contain letters, numbers and symbols"
+      )
       .required("password cannot be empty"),
     password2: yup
       .string()
@@ -72,23 +79,27 @@ function EmployeeSignupForm() {
   });
 
   const submitForm = (data) => {
+    postData(url, requestHeader(data));
     console.log(data);
   };
   return (
-    <form onSubmit={handleSubmit(submitForm)} className={`${classes.contentArea} ${classes.formStyle}`}>
+    <form
+      onSubmit={handleSubmit(submitForm)}
+      className={`${classes.contentArea} ${classes.formStyle}`}
+    >
       <CustomTextField
         label="full name"
         placeholder="please enter your full name"
         fullWidth
-        {...register("fullName")}
-        inputError={errors.fullName}
+        {...register("name")}
+        inputError={errors.name}
       />
       <CustomTextField
         label="Employee Id"
         placeholder="Please enter your employee id"
         fullWidth
-        {...register("employmentId")}
-        inputError={errors.employmentId}
+        {...register("empId")}
+        inputError={errors.empId}
       />
       <FormControl fullWidth>
         <InputLabel className={classes.inputLable}>Position</InputLabel>
@@ -107,7 +118,7 @@ function EmployeeSignupForm() {
           <option value="STORES_MANAGER">Stores Manager</option>
           <option value="PURCHASING_ASSISTANT">Purchasing Assistant</option>
           <option value="ICT_MANAGEER">ICT Manager</option>
-          <option value="" selected></option>
+          <option defaultValue>none</option>
         </Select>
         <FormHelperText className={`${classes.error} ${classes.inputLable}`}>
           {errors.position?.message}

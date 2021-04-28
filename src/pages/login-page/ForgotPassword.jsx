@@ -1,7 +1,6 @@
 import {
   ButtonGroup,
   makeStyles,
-  TextField,
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
@@ -105,14 +104,13 @@ function ForgotPassword(props) {
           <form
             className={classes.contentArea}
             onSubmit={handleSubmit(onSubmit)}
-            nonvalidate
           >
             <CustomTextField
               label="email"
               placeholder="Enter your email"
               variant="outlined"
               type="email"
-              fullwidth
+              fullWidth
               autoComplete="off"
               {...register("email")}
               inputError={errors.email}

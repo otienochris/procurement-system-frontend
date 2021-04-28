@@ -15,7 +15,7 @@ function CustomTextField(props) {
       label={label}
       placeholder={placeholder}
       color={color || "primary"}
-      autoComplete={autoComplete || "off"}
+      autoComplete="off"
       variant={variant || "outlined"}
       className={classes.textFieldStyle}
       error={inputError ? true : false}

@@ -6,7 +6,7 @@ import Home from "./pages/home-page";
 import Dashboard from "./pages/dashboard-page";
 import Login from "./pages/login-page/";
 import Signup from "./pages/signup-page/";
-import { ThemeProvider } from "@material-ui/styles";
+// import { ThemeProvider } from "@material-ui/styles";
 import { CssBaseline, makeStyles } from "@material-ui/core";
 // import {blackOrangeTheme} from "./themes/customeThemes"
 const useStyles = makeStyles({
