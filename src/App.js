@@ -6,9 +6,10 @@ import Home from "./pages/home-page";
 import Dashboard from "./pages/dashboard-page";
 import Login from "./pages/login-page/";
 import Signup from "./pages/signup-page/";
-// import { ThemeProvider } from "@material-ui/styles";
 import { CssBaseline, makeStyles } from "@material-ui/core";
-// import {blackOrangeTheme} from "./themes/customeThemes"
+import Profile from "./pages/profile";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const useStyles = makeStyles({
   appStyle: {
     minHeight: "100vh",
@@ -29,18 +30,11 @@ function App() {
         <NavBar />
         <main className={classes.appStyle}>
           <Switch>
-            <Route path="/" exact>
-              <Home />
-            </Route>
-            <Route path="/login" exact>
-              <Login />
-            </Route>
-            <Route path="/dashboard" exact>
-              <Dashboard />
-            </Route>
-            <Route path="/signup" exact>
-              <Signup />
-            </Route>
+            <Route component={Home} path="/" exact />
+            <Route component={Login} path="/login" exact />
+            <Route component={Signup} path="/signup" exact />
+            <ProtectedRoute component={Dashboard} path="/dashboard" exact />
+            <ProtectedRoute component={Profile} path="/profile" exact />
           </Switch>
           <Footer />
         </main>

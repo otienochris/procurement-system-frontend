@@ -1,11 +1,14 @@
-import React from 'react'
+import { Paper, Typography } from "@material-ui/core";
+import React from "react";
 
-function index() {
-    return (
-        <div>
-            <h1>profile</h1>
-        </div>
-    )
+function Index() {
+  return (
+    <Paper style={{minWidth:"100%"}}>
+      <Typography style={{ color:"white", minHeight: "100vh", minWidth:"100%"}}>
+        Profiles
+      </Typography>
+    </Paper>
+  );
 }
 
-export default index
+export default Index;

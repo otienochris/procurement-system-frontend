@@ -113,6 +113,7 @@ function EmployeeSignupForm(props) {
           {...register("position")}
           error={errors.position ? true : false}
         >
+          <option value=""></option>
           <option value="PROCUREMENT_OFFICER">Procurement officer</option>
           <option value="INVENTORY_MANAGER">Inventory Manager</option>
           <option value="FINANCE">Finance</option>
@@ -122,7 +123,7 @@ function EmployeeSignupForm(props) {
           <option value="STORES_MANAGER">Stores Manager</option>
           <option value="PURCHASING_ASSISTANT">Purchasing Assistant</option>
           <option value="ICT_MANAGEER">ICT Manager</option>
-          <option defaultValue>none</option>
+          
         </Select>
         <FormHelperText className={`${classes.error} ${classes.inputLable}`}>
           {errors.position?.message}

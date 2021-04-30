@@ -11,11 +11,11 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/customControls/CustomButton";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import ForgotPassword from "./ForgotPassword";
 import CustomPaper from "../../components/customControls/CustomPaper";
 import CustomTextField from "../../components/customControls/CustomTextField";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { isLoggedInActions, tokenActions } from "../../actions/";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +49,7 @@ function LoginForm() {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
+  const isLoggedIn = useSelector((state) => state.isLoggedIn);
 
   const dispatch = useDispatch();
 
@@ -120,7 +121,7 @@ function LoginForm() {
         sm={4}
         className={classes.contentArea}
       >
-        {isLoading ? (
+        {isLoggedIn ? <Redirect to="/dashboard" /> : isLoading ? (
           <CustomPaper>
             <Typography
               color="textPrimary"

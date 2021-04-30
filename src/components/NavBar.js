@@ -3,6 +3,8 @@ import React from "react";
 
 import HomeIcon from "@material-ui/icons/Home";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import AccountCircleRoundedIcon from "@material-ui/icons/AccountCircleRounded";
+import DashboardRoundedIcon from "@material-ui/icons/DashboardRounded";
 import { Link } from "react-router-dom";
 // import { Home } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,7 +32,7 @@ function NavBar() {
                 badgeContent={3}
                 style={{ color: "black", fontWeight: "bolder" }}
               >
-                <NotificationsIcon color="primary" />
+                <NotificationsIcon />
               </Badge>
             </IconButton>
           )}
@@ -45,9 +47,17 @@ function NavBar() {
             </>
           )}
           {isLoggedIn && (
-            <Button component={Link} to="/" onClick={handleLogOut}>
-              log out
-            </Button>
+            <>
+              <IconButton component={Link} to="/dashboard">
+                <DashboardRoundedIcon/>
+              </IconButton>
+              <IconButton component={Link} to="/profile">
+                <AccountCircleRoundedIcon />
+              </IconButton>
+              <Button component={Link} to="/" onClick={handleLogOut}>
+                log out
+              </Button>
+            </>
           )}
         </div>
       </Toolbar>

@@ -1,4 +1,4 @@
-import { AppBar, makeStyles, Toolbar } from "@material-ui/core";
+import { AppBar, makeStyles, Toolbar, Typography } from "@material-ui/core";
 import React from "react";
 
 const useStyles = makeStyles({
@@ -14,7 +14,9 @@ function Footer() {
   return (
     <footer className={classes.root}>
       <AppBar position="static" color="default">
-        <Toolbar></Toolbar>
+        <Toolbar>
+          <Typography >Footer</Typography>
+        </Toolbar>
       </AppBar>
     </footer>
   );
