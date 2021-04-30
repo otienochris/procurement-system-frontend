@@ -70,6 +70,8 @@ function EmployeeSignupForm(props) {
 
   const {
     register,
+    unregister,
+    reset,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -79,8 +81,10 @@ function EmployeeSignupForm(props) {
   });
 
   const submitForm = (data) => {
-    postData(url, requestHeader(data));
+    delete data.password2;
     console.log(data);
+    postData(url, requestHeader(data));
+    reset();
   };
   return (
     <form

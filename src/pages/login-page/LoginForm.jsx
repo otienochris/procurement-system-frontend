@@ -6,7 +6,7 @@ import {
   Paper,
   Typography,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
 import ForgotPassword from "./ForgotPassword";
 import CustomPaper from "../../components/customControls/CustomPaper";
 import CustomTextField from "../../components/customControls/CustomTextField";
+import { useDispatch } from "react-redux";
+import { isLoggedInActions, tokenActions } from "../../actions/";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -45,12 +47,10 @@ const url = "http://192.168.137.1:8080/api/v1/users/authenticate";
 
 function LoginForm() {
   const classes = useStyles();
-
-  const [token, setToken] = useState(null);
-  const [fetchErrors, setFetchErrors] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [forgotPassword, setForgotPassword] = useState(false);
+
+  const dispatch = useDispatch();
 
   const loginSchema = yup.object().shape({
     username: yup
@@ -63,35 +63,40 @@ function LoginForm() {
     password: yup.string().required("please enter your password"),
   });
 
-  const requestHeader = {
+  const requestHeader = (data) => ({
     method: "POST",
     mode: "cors",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData),
-  };
+    body: JSON.stringify(data),
+  });
 
-  const fetchData = async () => {
+  const fetchData = async (inputData) => {
     setIsLoading(true);
+
     try {
-      const response = await fetch(url, requestHeader);
+      const response = await fetch(url, requestHeader(inputData));
       const result = await response.json();
-      setToken(result);
       setIsLoading(false);
       console.log(result);
-      if (!response.ok) {
-        alert("Please try agains! Invalid username and password");
-        // errors = "Invalid credential";
+      if (response.ok) {
+        dispatch(isLoggedInActions("SIGN_IN"));
+        dispatch(tokenActions("SET_TOKEN", result.token));
+      } else {
+        alert(result.message);
       }
     } catch (errors) {
       console.log(errors);
+      alert(
+        "Sorry, failed to connenct to the server, please check your connection."
+      );
       setIsLoading(false);
-      setFetchErrors(errors);
     }
   };
 
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -101,9 +106,8 @@ function LoginForm() {
   });
 
   const submitForm = (inputData) => {
-    setUserData(inputData);
-    // console.log(inputData);
-    fetchData();
+    fetchData(inputData);
+    reset();
   };
 
   return (

@@ -5,8 +5,13 @@ import { useStyles } from "./EmployeeSignupForm";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
+import {requestHeader} from "./index"
 
-const HeadOfDepartment = () => {
+const url = "http://192.168.137.1:8080/api/v1/suppliers/signup";
+
+const HeadOfDepartment = (props) => {
+  const { postData } = props;
+
   const headOfDepartmentSchema = yup.object().shape({
     empId: yup.string().required("Employment Id is required"),
     departmentId: yup.string().required("Department Id is required"),
@@ -31,6 +36,7 @@ const HeadOfDepartment = () => {
   const classes = useStyles();
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -40,7 +46,12 @@ const HeadOfDepartment = () => {
   });
 
   const submitForm = (inputData) => {
+    delete inputData.password2;
+
+    postData(url, requestHeader(inputData))
     console.log(inputData);
+
+    reset(); // reset the useForm state and values.
   };
   return (
     <form

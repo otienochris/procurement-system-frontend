@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const useFetch = (url, header) => {
   const [data, setData] = useState(null);
@@ -7,7 +7,7 @@ export const useFetch = (url, header) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(url, header);
+      const response = await fetch();
       const result = await response.json();
       setData(result);
       setIsLoading(false);
@@ -15,6 +15,10 @@ export const useFetch = (url, header) => {
       setErrors(errors);
     }
   };
+
+  useEffect(()=> {
+    fetchData()
+  }, [url, header])
   
   return { data, isLoading, errors };
 };

@@ -1,16 +1,49 @@
+import { Grid, makeStyles, Paper, Typography } from "@material-ui/core";
 import React from "react";
+import CustomPaper from "../../components/customControls/CustomPaper";
 
-function index() {
+const useStyles = makeStyles((theme) => ({
+  sections: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  newsSection: {
+    minHeight: "100vh",
+    backgroundColor: "black",
+  },
+  openTendersSection: {
+    minHeight: "100%",
+    backgroundColor: "blue",
+  },
+  closedTendersSection: {
+    minHeight: "100%",
+    backgroundColor: "brown",
+  },
+}));
+
+function Index() {
+  const classes = useStyles();
   return (
-    <div className="section">
-      <h1 style={{ color: "white" }}>Home</h1>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid eaque
-        laborum sint voluptatum recusandae quisquam reiciendis repellendus fuga.
-        Ipsam, maxime!
-      </p>
-    </div >
+    <Grid container direction="column">
+      <Grid container item direction="column" className={classes.newsSection}>
+        <Paper className={`${classes.newsSection} ${classes.sections}`}>
+          <Typography> News Section</Typography>
+        </Paper>
+      </Grid>
+      <Grid container item direction="column">
+        <Paper className={`${classes.openTendersSection} ${classes.sections}`}>
+          <Typography> Open Tenders</Typography>
+        </Paper>
+      </Grid>
+      <Grid container item direction="column">
+        <Paper className={`${classes.closedTendersSection} ${classes.sections}`}>
+          <Typography> Closed Tenders</Typography>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 }
 
-export default index;
+export default Index;
