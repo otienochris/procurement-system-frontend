@@ -1,9 +1,4 @@
-import {
-  ButtonGroup,
-  CircularProgress,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import CustomPaper from "../../components/customControls/CustomPaper";
 import CustomTextField from "../../components/customControls/CustomTextField";
@@ -14,9 +9,8 @@ import CustomButton from "../../components/customControls/CustomButton";
 import {
   changePasswordUrl,
   requestHeaderWithBodyBeforeAuthentication,
-  sendChangePasswordTokenUrl,
 } from "../../components/requestHeaders";
-import ChangePassword from "./ChangePassword";
+import { Redirect } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   underline: {
@@ -37,14 +31,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ForgotPassword(props) {
-  const { setForgotPassword } = props;
+function ChangePassword({setForgotPassword}) {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [success, setIsSuccess] = useState(false);
 
-  const emailSchema = yup.object().shape({
-    email: yup.string().email("Enter a valid email").required(),
+  const changePasswordSchema = yup.object().shape({
+    token: yup.string().required("token is required"),
+    newPassword: yup
+      .string()
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "password must be of legth 8+, contain letters, numbers and symbols"
+      )
+      .required(),
+    newPassword2: yup
+      .string()
+      .oneOf([yup.ref("newPassword")], "passwords do not match")
+      .required(),
   });
 
   const {
@@ -55,45 +59,44 @@ function ForgotPassword(props) {
   } = useForm({
     mode: "onChange",
     criteriaMode: "all",
-    resolver: yupResolver(emailSchema),
+    resolver: yupResolver(changePasswordSchema),
   });
 
-  const sendMail = async (email) => {
+  const submitNewPassword = async (newPassword) => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        sendChangePasswordTokenUrl,
-        requestHeaderWithBodyBeforeAuthentication(email)
+        changePasswordUrl,
+        requestHeaderWithBodyBeforeAuthentication(newPassword)
       );
       const result = response.json();
       console.log(result);
 
       setIsLoading(false);
       if (response.ok) {
-        // setForgotPassword(false);
         setIsSuccess(true);
-        alert("Check your mail to change your password");
+        setForgotPassword(false)
+        alert("Password changed successfully");
       } else {
-        // setForgotPassword(false);
-        alert(
-          "Error while sending mail. make sure it is the correct email address"
-        );
+        alert("Error while changing password");
       }
     } catch (fetchErrors) {
-      setForgotPassword(false);
       setIsLoading(false);
+      console.log(fetchErrors);
     }
   };
 
   const onSubmit = (inputData) => {
-    sendMail(inputData);
+    delete inputData.newPassword2; // we don't need the confirm password
+    console.log(inputData);
+    submitNewPassword(inputData);
     reset();
   };
 
   return (
     <>
       {success ? (
-        <ChangePassword setForgotPassword={setForgotPassword}/>
+        <Redirect to="/login" />
       ) : isLoading ? (
         <CustomPaper>
           <CircularProgress />
@@ -106,7 +109,7 @@ function ForgotPassword(props) {
             variant="h4"
             className="headings"
           >
-            Forgot Password
+            Change Password
           </Typography>
           <div className={classes.underline}></div>
           <form
@@ -114,31 +117,41 @@ function ForgotPassword(props) {
             onSubmit={handleSubmit(onSubmit)}
           >
             <CustomTextField
-              label="email"
-              placeholder="Enter your email"
+              label="Token"
+              placeholder="Enter Token From Mail"
               variant="outlined"
-              type="email"
               fullWidth
               autoComplete="off"
-              {...register("email")}
-              inputError={errors.email}
+              {...register("token")}
+              inputError={errors.token}
             />
-            <ButtonGroup className={classes.buttonGroup}>
-              <CustomButton
-                size="small"
-                text="go back"
-                color="default"
-                variant="contained"
-                onClick={() => setForgotPassword(false)}
-              />
-              <CustomButton
-                size="small"
-                text="submit"
-                type="submit"
-                variant="contained"
-                color="primary"
-              />
-            </ButtonGroup>
+            <CustomTextField
+              label="New Password"
+              placeholder="Enter new password"
+              variant="outlined"
+              type="password"
+              fullWidth
+              autoComplete="off"
+              {...register("newPassword")}
+              inputError={errors.newPassword}
+            />
+            <CustomTextField
+              label="Confirm New Password"
+              placeholder="Match the password above"
+              variant="outlined"
+              type="password"
+              fullWidth
+              autoComplete="off"
+              {...register("newPassword2")}
+              inputError={errors.newPassword2}
+            />
+            <CustomButton
+              size="small"
+              text="submit"
+              type="submit"
+              variant="contained"
+              color="primary"
+            />
           </form>
         </CustomPaper>
       )}
@@ -146,4 +159,4 @@ function ForgotPassword(props) {
   );
 }
 
-export default ForgotPassword;
+export default ChangePassword;

@@ -20,14 +20,31 @@ export const tokenActions = (name, payload) => {
     case "SET_TOKEN":
       return {
         type: "SET_TOKEN",
-        payload
-      }
-      case "CLEAR_TOKEN":
-        return {
-          type: "CLEAR_TOKEN",
-          payload: ""
-        }  
+        payload,
+      };
+    case "CLEAR_TOKEN":
+      return {
+        type: "CLEAR_TOKEN",
+        payload: "",
+      };
     default:
       break;
   }
-}
+};
+
+export const userActions = (name, payload) => {
+  switch (name) {
+    case "SET_USERNAME":
+      return {
+        type: "SET_USERNAME",
+        payload: payload,
+      };
+    case "CLEAR_USERNAME":
+      return {
+        type: "SET_USERNAME",
+        payload: "",
+      };
+    default:
+      break;
+  }
+};

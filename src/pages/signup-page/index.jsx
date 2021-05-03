@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import { AppBar, Grid, makeStyles, Tab, Tabs, Typography } from "@material-ui/core";
+import {
+  AppBar,
+  CircularProgress,
+  Grid,
+  makeStyles,
+  Tab,
+  Tabs,
+} from "@material-ui/core";
 import CustomPaper from "../../components/customControls/CustomPaper";
 import EmployeeSignupForm from "./EmployeeSignupForm";
 import SignupSupplier from "./SupplierSignUp";
 import HeadOfDepartment from "./HeadOfDepartment";
+import SignupSuccess from "./SignupSuccess";
 
-export const requestHeader = (payload) => ({
-  method:"POST",
-  mode:"cors",
-  credentials: "include",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload),
-});
-
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   container: {
     minHeight: "85vh",
     width: "100vw",
@@ -34,11 +34,14 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     // backgroundColor: "green",
   },
+  spacingStyle: {
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 function Index() {
   const classes = useStyles();
-  const [successful, setSuccessful] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // for the tabs
@@ -56,10 +59,10 @@ function Index() {
 
       console.log(result);
       if (response.ok) {
-        setSuccessful(true);
+        setIsSuccessful(true);
         alert("please verify your email to activate your account");
       } else {
-        alert("error creating your account");
+        alert(result.message);
       }
       setIsLoading(false);
     } catch (error) {
@@ -80,7 +83,9 @@ function Index() {
           className={classes.contentArea}
           // direction="column"
         >
-          {!isLoading ? (
+          {isSuccessful ? (
+            <SignupSuccess />
+          ) : !isLoading ? (
             <CustomPaper>
               <AppBar
                 position="static"
@@ -99,14 +104,7 @@ function Index() {
             </CustomPaper>
           ) : (
             <CustomPaper>
-              <Typography
-                color="textPrimary"
-                align="center"
-                variant="h4"
-                className="headings"
-              >
-                Loading ...
-              </Typography>
+              <CircularProgress />
             </CustomPaper>
           )}
         </Grid>

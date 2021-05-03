@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import CustomTextField from "../../components/customControls/CustomTextField";
 import CustomButton from "../../components/customControls/CustomButton";
-import { requestHeader } from "./index";
+import {userActions} from "../../actions"
 import {
   FormControl,
   FormHelperText,
@@ -12,6 +12,8 @@ import {
   makeStyles,
   Select,
 } from "@material-ui/core";
+import { useDispatch } from "react-redux";
+import { employeesDomainUrl, requestHeaderWithBodyBeforeAuthentication } from "../../components/requestHeaders";
 
 export const useStyles = makeStyles((theme) => ({
   container: {
@@ -38,11 +40,10 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const url = "http://192.168.137.1:8080/api/v1/employees/";
-
 function EmployeeSignupForm(props) {
   const { postData } = props;
   const classes = useStyles();
+  const dispatch = useDispatch()
   const schema = yup.object().shape({
     name: yup
       .string()
@@ -70,7 +71,6 @@ function EmployeeSignupForm(props) {
 
   const {
     register,
-    unregister,
     reset,
     formState: { errors },
     handleSubmit,
@@ -82,8 +82,9 @@ function EmployeeSignupForm(props) {
 
   const submitForm = (data) => {
     delete data.password2;
-    console.log(data);
-    postData(url, requestHeader(data));
+    dispatch(userActions("SET_USERNAME", data.empId))
+    
+    postData(employeesDomainUrl, requestHeaderWithBodyBeforeAuthentication(data));
     reset();
   };
   return (

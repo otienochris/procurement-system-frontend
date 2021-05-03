@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import {requestHeader} from "./index"
+import { requestHeaderWithBodyBeforeAuthentication } from "../../components/requestHeaders";
 
 const url = "http://192.168.137.1:8080/api/v1/suppliers/signup";
 
@@ -48,7 +49,7 @@ const HeadOfDepartment = (props) => {
   const submitForm = (inputData) => {
     delete inputData.password2;
 
-    postData(url, requestHeader(inputData))
+    postData(url, requestHeaderWithBodyBeforeAuthentication(inputData))
     console.log(inputData);
 
     reset(); // reset the useForm state and values.

@@ -8,15 +8,17 @@ import DashboardRoundedIcon from "@material-ui/icons/DashboardRounded";
 import { Link } from "react-router-dom";
 // import { Home } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { isLoggedInActions, tokenActions } from "../actions";
+import { isLoggedInActions, tokenActions, userActions } from "../actions";
 
 function NavBar() {
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const username = useSelector((state) => state.userDetails.username);
   const dispatch = useDispatch();
 
   const handleLogOut = () => {
     dispatch(isLoggedInActions("SIGN_OUT"));
     dispatch(tokenActions("CLEAR_TOKEN"));
+    dispatch(userActions("CLEAR_USERNAME"))
   };
   return (
     <AppBar color="default" position="fixed">

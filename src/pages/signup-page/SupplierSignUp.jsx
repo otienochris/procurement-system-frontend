@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useStyles } from "./EmployeeSignupForm";
 import { requestHeader } from "./index";
 import { TrainRounded } from "@material-ui/icons";
+import { requestHeaderWithBodyBeforeAuthentication } from "../../components/requestHeaders";
 
 const url = "http://192.168.137.1:8080/api/v1/suppliers/signup";
 const approveUrl = "https://api.appruve.co/v1/verifications/ke/kra";
@@ -74,7 +75,7 @@ function SupplierSignUp(props) {
 
     // todo verifyKra(data.kRA);
 
-    postData(url, requestHeader(data));
+    postData(url, requestHeaderWithBodyBeforeAuthentication(data));
     // if (isKraValid) {
     // }
     reset()
