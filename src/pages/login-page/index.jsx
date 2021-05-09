@@ -39,7 +39,7 @@ function Index() {
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const [isUserDisabled, setIsUserDisabled] = useState(false);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   return (
     <Grid container className={customClasses.container}>
@@ -59,7 +59,7 @@ function Index() {
           <LoginForm
             setIsLoading={setIsLoading}
             setIsUserDisabled={setIsUserDisabled}
-            dispatch={dispatch}
+            // dispatch={dispatch}
             customClasses={customClasses}
             setForgotPassword={setForgotPassword}
           />

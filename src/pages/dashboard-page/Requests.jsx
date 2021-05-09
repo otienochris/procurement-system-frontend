@@ -1,6 +1,6 @@
 import React from 'react'
 
-function PurchaseRequistion() {
+const Requests = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ function PurchaseRequistion() {
     )
 }
 
-export default PurchaseRequistion
+export default Requests

@@ -7,9 +7,9 @@ import { useForm } from "react-hook-form";
 import { useStyles } from "./EmployeeSignupForm";
 import { requestHeader } from "./index";
 import { TrainRounded } from "@material-ui/icons";
-import { requestHeaderWithBodyBeforeAuthentication } from "../../components/requestHeaders";
+import { requestHeaderWithBodyBeforeAuthentication, suppliersDomainUrl } from "../../components/requestHeaders";
 
-const url = "http://192.168.137.1:8080/api/v1/suppliers/signup";
+// const url = "http://192.168.137.1:8080/api/v1/suppliers/signup";
 const approveUrl = "https://api.appruve.co/v1/verifications/ke/kra";
 const testKraValidationToken =
   "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4YmFhM2RkNS04NTkxLTQzZDYtYjY1MC1kOTExNzdkNGYxMDciLCJhdWQiOiI5NGNmMTYyMS0wYTUwLTRlZTctYjc0Zi1mNDkwNjVkMjNkMTkiLCJzdWIiOiIxYWQwY2FiYS0zMDBjLTRjNjItODQxNy03NmJmYWVhM2I5YzEiLCJuYmYiOjAsInNjb3BlcyI6WyJ2ZXJpZmljYXRpb25fdmlldyIsInZlcmlmaWNhdGlvbl9saXN0IiwidmVyaWZpY2F0aW9uX2RvY3VtZW50IiwidmVyaWZpY2F0aW9uX2lkZW50aXR5Il0sImV4cCI6MTYyMDUzNjg1MCwiaWF0IjoxNjE3OTQ0ODUwfQ.sOi46uzz9iL54b4CPanxVmx3SraS--to_TEIE2A-em4";
@@ -75,7 +75,7 @@ function SupplierSignUp(props) {
 
     // todo verifyKra(data.kRA);
 
-    postData(url, requestHeaderWithBodyBeforeAuthentication(data));
+    postData(suppliersDomainUrl, requestHeaderWithBodyBeforeAuthentication(data));
     // if (isKraValid) {
     // }
     reset()

@@ -1,10 +1,15 @@
 import React from 'react'
+import CustomPaper from '../../components/customControls/CustomPaper'
+import RequestForQuotation from "./RequestForQuotation";
 
-function RequestForQuotations() {
+function RequestForQuotations({requestsForQuotations}) {
     return (
-        <div>
-            <h1>RequestForQuotations</h1>
-        </div>
+        <CustomPaper>
+            <h1>Requests for quotation</h1>
+            {requestsForQuotations.map(rfq => {
+                
+            })}
+        </CustomPaper>
     )
 }
 

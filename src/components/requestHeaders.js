@@ -1,17 +1,39 @@
-export const authenticationUrl =
-  "http://192.168.137.1:8080/api/v1/users/authenticate";
-export const changePasswordUrl =
-  "http://192.168.137.1:8080/api/v1/users/submitNewPassword";
-export const sendChangePasswordTokenUrl =
-  "http://192.168.137.1:8080/api/v1/users/changePassword";
-export const activateAccounturl =
-  "http://192.168.137.1:8080/api/v1/users/verifyEmail/";
-export const employeesDomainUrl = "http://192.168.137.1:8080/api/v1/employees/";
+// domain
+// export const apiDomain = "http://192.168.137.1:8080/api/v1";
+export const apiDomain = "http://localhost:8080/api/v1";
+export const frontEndDomain = "http://192.168.137.1:3000";
 
-export const requestHeaderWithBodyAfterAuthentication = (payload, token) => ({
-  method: "POST",
+// account management urls
+export const authenticationUrl = apiDomain + "/users/authenticate";
+export const changePasswordUrl = apiDomain + "/users/submitNewPassword";
+export const sendChangePasswordTokenUrl = apiDomain + "/users/changePassword";
+export const activateAccounturl = apiDomain + "/users/verifyEmail/";
+
+// employees urls
+export const employeesDomainUrl = apiDomain + "/employees/";
+
+// suppliers urls
+export const suppliersDomainUrl = apiDomain + "/suppliers/";
+
+// departmentHead urls
+export const departmentHeadsUrl = apiDomain + "/department-heads/";
+
+// request for quoation urls
+export const getAllRequestForQuotations = apiDomain + "/rfqs/";
+
+// request for quoation urls
+export const getAllRequestionForInfo = apiDomain + "/rfis/";
+
+// solicitation urls
+export const getAllSolicitations = apiDomain + "/solicitations/";
+
+export const requestHeaderWithBodyAfterAuthentication = (
+  method,
+  payload,
+  token
+) => ({
+  method,
   mode: "cors",
-  credentials: "include",
   headers: {
     "Content-Type": "application/json",
     Authorization: "Bearer " + token,
@@ -22,8 +44,8 @@ export const requestHeaderWithBodyAfterAuthentication = (payload, token) => ({
 export const requestHeaderWithoutBodyAfterAuthentication = (token) => ({
   method: "GET",
   mode: "cors",
-  credentials: "include",
   headers: {
+    Accept: "application/json",
     "Content-Type": "application/json",
     Authorization: "Bearer " + token,
   },
@@ -32,7 +54,9 @@ export const requestHeaderWithoutBodyAfterAuthentication = (token) => ({
 export const requestHeaderWithBodyBeforeAuthentication = (payload) => ({
   method: "POST",
   mode: "cors",
-  credentials: "include",
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    // "Access-Control-Allow-Origin": "**"
+  },
   body: JSON.stringify(payload),
 });
