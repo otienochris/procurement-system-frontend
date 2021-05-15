@@ -27,6 +27,9 @@ export const getAllRequestionForInfo = apiDomain + "/rfis/";
 // solicitation urls
 export const getAllSolicitations = apiDomain + "/solicitations/";
 
+// purchase order
+export const purchaseOrderDomainUrl = apiDomain + "/purchase-orders/"
+
 export const requestHeaderWithBodyAfterAuthentication = (
   method,
   payload,

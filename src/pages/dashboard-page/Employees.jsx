@@ -1,8 +1,11 @@
 import { makeStyles } from "@material-ui/core";
 import MaterialTable from "material-table";
-import React from "react";
+import React, { useState } from "react";
 import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
 import CustomPaper from "../../components/customControls/CustomPaper";
+import Popup from "../../components/customControls/Popup";
+import EmployeeSignupForm from "../signup-page/EmployeeSignupForm";
+import {postData} from "../signup-page/index"
 
 export const useStyles = makeStyles((theme) => ({
   spacingStyle: {
@@ -12,8 +15,23 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const addEmployee = async (url, requestHeader) => {
+  try {
+    const response = await fetch(url, requestHeader);
+    const result = await response.json();
+    if (response.ok) {
+      alert("please verify your email to activate your account");
+    } else {
+      alert(result.message);
+    }
+  }catch(errors){
+    console.log(errors);
+  }
+};
+
 function Employees({ employees, setEmployees }) {
   const classes = useStyles();
+  const [openPopup, setOpenPopup] = useState(false)
   return (
     <div className={classes.spacingStyle}>
       <CustomMaterialTable
@@ -35,9 +53,13 @@ function Employees({ employees, setEmployees }) {
           // { title: "Date Created", field: "dateCreated" },
           // { title: "Date Modified", field: "dateModified" },
         ]}
+        setOpenPopup={setOpenPopup}
         data={employees}
         setData={setEmployees}
       />
+      <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} title="Add Employee">
+        <EmployeeSignupForm postData={addEmployee} />
+      </Popup>
     </div>
   );
 }

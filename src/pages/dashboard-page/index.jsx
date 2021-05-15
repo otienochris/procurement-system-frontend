@@ -23,7 +23,7 @@ import Purchases from "./Purchases";
 
 const useStylesIndex = makeStyles((theme) => ({
   navigationArea: {
-    height: "100vh",
+    minHeight: "100vh",
     // position: "absolute",
     // left: "0px",
     width: "12vw",
@@ -106,7 +106,7 @@ function Index() {
   useEffect(() => {
     fetchEmployees(employeesDomainUrl);
     fetchSuppliers(suppliersDomainUrl);
-    fetchDepartmentHeads(departmentHeadsUrl);
+    // fetchDepartmentHeads(departmentHeadsUrl);
   }, []);
 
   return (
@@ -116,12 +116,12 @@ function Index() {
           <IconButton className={classes.menuIconStyle} title="menu">
             <MenuOpenIcon fontSize="large" />
           </IconButton>
-          <hr />
-          <Divider />
+          <Divider/>
           <IconButton
             className={classes.otherIconStyle}
             onClick={() => handleClick(0)}
             title="Requests"
+            dividers
           >
             <FolderIcon />
           </IconButton>

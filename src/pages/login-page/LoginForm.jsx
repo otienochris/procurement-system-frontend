@@ -79,6 +79,7 @@ function LoginForm({
 
   return (
     <Paper
+    style={{marginTop:"12vh"}}
       className={`${customClasses.paperArea} ${customClasses.contentArea}`}
     >
       <Typography
@@ -118,7 +119,7 @@ function LoginForm({
           text="Log in"
         />
         <div>
-          <ButtonGroup>
+          <ButtonGroup style={{marginBottom:"3vh"}}>
             <CustomButton
               text="Sign up"
               variant="outlined"
@@ -127,7 +128,7 @@ function LoginForm({
               to="/signup"
             />
             <CustomButton
-              text="Change Passord"
+              text="Change Password"
               variant="outlined"
               color="default"
               onClick={() => setForgotPassword(true)}
