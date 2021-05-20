@@ -52,9 +52,10 @@ function LoginForm({
       }
     } catch (errors) {
       // console.log(errors)
-      alert(
-        "Sorry, failed to connenct to the server, please check your connection."
-      );
+      // alert(
+      //   inputData.username + "Sorry, failed to connenct to the server, please check your connection."
+      // );
+      alert(errors)
       setIsLoading(false);
     }
   };

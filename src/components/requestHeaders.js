@@ -18,30 +18,30 @@ export const suppliersDomainUrl = apiDomain + "/suppliers/";
 // departmentHead urls
 export const departmentHeadsUrl = apiDomain + "/department-heads/";
 
-// request for quoation urls
+// request for quotation urls
 export const getAllRequestForQuotations = apiDomain + "/rfqs/";
 
-// request for quoation urls
-export const getAllRequestionForInfo = apiDomain + "/rfis/";
+// request for quotation urls
+export const getAllRequestForInfo = apiDomain + "/rfis/";
 
 // solicitation urls
 export const getAllSolicitations = apiDomain + "/solicitations/";
 
 // purchase order
-export const purchaseOrderDomainUrl = apiDomain + "/purchase-orders/"
+export const purchaseOrderDomainUrl = apiDomain + "/purchase-orders/";
 
 export const requestHeaderWithBodyAfterAuthentication = (
   method,
-  payload,
+  body,
   token
 ) => ({
   method,
   mode: "cors",
   headers: {
-    "Content-Type": "application/json",
     Authorization: "Bearer " + token,
+    Accept: "application/json",
   },
-  body: JSON.stringify(payload),
+  body,
 });
 
 export const requestHeaderWithoutBodyAfterAuthentication = (token) => ({

@@ -57,12 +57,16 @@ const AccountActivation = ({ setIsUserDisabled }) => {
   };
 
   const handleSendCodeButton = () => {
-    sendVerCode(activateAccounturl + "sendCode/", username);
+    sendVerCode(activateAccounturl + "sendCode/", username).then();
     reset();
   };
   const handleActivateAccount = (data) => {
+    fetchData(activateAccounturl + data.code).then();
+
     setVerCodeSent(false);
-    fetchData(activateAccounturl + data.code);
+    setIsActivated(true);
+    // setIsUserDisabled(false);
+
     reset();
   };
   return (

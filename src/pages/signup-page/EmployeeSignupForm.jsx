@@ -90,7 +90,7 @@ function EmployeeSignupForm(props) {
   return (
     <form
       onSubmit={handleSubmit(submitForm)}
-      className={`${classes.contentArea} ${classes.formStyle}`}
+      className={`${classes.contentArea}`}
     >
       <CustomTextField
         label="full name"
@@ -112,7 +112,7 @@ function EmployeeSignupForm(props) {
           native
           variant="outlined"
           {...register("position")}
-          error={errors.position ? true : false}
+          error={!!errors.position}
         >
           <option value=""></option>
           <option value="PROCUREMENT_OFFICER">Procurement officer</option>

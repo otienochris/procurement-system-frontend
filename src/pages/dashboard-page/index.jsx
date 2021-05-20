@@ -20,6 +20,7 @@ import {
 } from "../../components/requestHeaders";
 import { useSelector } from "react-redux";
 import Purchases from "./Purchases";
+import Requests from "./Requests";
 
 const useStylesIndex = makeStyles((theme) => ({
   navigationArea: {
@@ -117,20 +118,21 @@ function Index() {
             <MenuOpenIcon fontSize="large" />
           </IconButton>
           <Divider/>
+
           <IconButton
             className={classes.otherIconStyle}
             onClick={() => handleClick(0)}
-            title="Requests"
-            dividers
-          >
-            <FolderIcon />
-          </IconButton>
-          <IconButton
-            className={classes.otherIconStyle}
-            onClick={() => handleClick(1)}
             title="Purchases"
           >
             <ShoppingBasketIcon />
+          </IconButton>
+          <IconButton
+              className={classes.otherIconStyle}
+              onClick={() => handleClick(1)}
+              title="Requests"
+              dividers
+          >
+            <FolderIcon />
           </IconButton>
           <IconButton
             className={classes.otherIconStyle}
@@ -142,8 +144,8 @@ function Index() {
         </Toolbar>
       </Grid>
       <Grid item xs={10} sm={11} className={classes.backgroundStyle}>
-        {selectedTab === 0}
-        {selectedTab === 1 && <Purchases />}
+        {selectedTab === 0 && <Purchases />}
+        {selectedTab === 1 && <Requests/>}
         {selectedTab === 2 && (
           <Users
             employees={employees}

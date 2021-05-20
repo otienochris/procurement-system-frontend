@@ -1,15 +1,24 @@
-import React from 'react'
-import CustomPaper from '../../components/customControls/CustomPaper'
-import RequestForQuotation from "./RequestForQuotation";
+import React, {useState} from 'react'
+import {useStyles} from "./Employees";
+import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
+import Popup from "../../components/customControls/Popup";
+import FormRequestForQuotation from "./FormRequestForQuotation";
 
 function RequestForQuotations({requestsForQuotations}) {
+    const classes = useStyles();
+    const [openPopup, setOpenPopup] = useState(false);
     return (
-        <CustomPaper>
-            <h1>Requests for quotation</h1>
-            {requestsForQuotations.map(rfq => {
-                
-            })}
-        </CustomPaper>
+        <div className={classes.spacingStyle}>
+            <CustomMaterialTable
+                title={"Request For Quotation"}
+                columns={[]}
+                data={[]}
+                setOpenPopup={setOpenPopup}
+            />
+            <Popup title={"Add Request for Quotation"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
+                <FormRequestForQuotation/>
+            </Popup>
+        </div>
     )
 }
 
