@@ -3,7 +3,7 @@ import CustomMaterialTable from "../../components/customControls/CustomMaterialT
 import Popup from "../../components/customControls/Popup";
 import {useStyles} from "./Employees";
 import FormPurchaseOrder from "./FormPurchaseOrder";
-import {getAllPO} from "../../services/purchase-order-service";
+import {getAllPO, savePO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
 import ImportContactsIcon from '@material-ui/icons/ImportContacts';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -14,21 +14,42 @@ const PurchaseOrders = () => {
     const token = useSelector(state => state.token)
     const [purchaseOrders, setPurchaseOrders] = useState([]);
     const [openPopup, setOpenPopup] = useState(false);
+    const [updateTable, setUpdateTable] = useState(false)
 
-    const fetchData = async (type) => {
+    const fetchData = async (type, body) => {
         switch (type) {
             case "getAllPO":
                 const po = await getAllPO(token).then(resp => resp).then(resp => resp.json());
                 setPurchaseOrders(po)
+                break
+            case "savePO":
+                await savePO(token, body).then(response => {
+                    if (response.ok){
+                        alert("Purchase Order added successfully");
+                        setUpdateTable(true);
+                    }else{
+                        alert("Error Saving Purchase Order");
+                    }
+                }).then()
+                setUpdateTable(false)
                 break
             default:
                 break
         }
     }
 
+    const handleFormSubmit = (data) => {
+        const formData = new FormData();
+        formData.append("rfpTemplate", data.rfpTemplate[0]);
+        formData.append("rfiTemplate", data.rfiTemplate[0]);
+        formData.append("status", data.status);
+        fetchData("savePO", formData).then()
+    };
+
     useEffect(() => {
         fetchData("getAllPO").then()
-    }, [])
+    }, [updateTable])
+
     return (
         <div className={classes.spacingStyle}>
             <CustomMaterialTable
@@ -59,7 +80,7 @@ const PurchaseOrders = () => {
                 setOpenPopup={setOpenPopup}
             />
             <Popup title="Add Purchase Order" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-                <FormPurchaseOrder/>
+                <FormPurchaseOrder handleFormSubmit={handleFormSubmit}/>
             </Popup>
         </div>
     );

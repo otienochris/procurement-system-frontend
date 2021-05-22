@@ -4,9 +4,9 @@ import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup"
 import {FormControl, FormHelperText, InputLabel, Select, TextField} from "@material-ui/core";
 import CustomButton from "../../components/customControls/CustomButton";
-import {useStyles} from "../signup-page/EmployeeSignupForm";
 import {getAllPO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
+import {useStyles} from "../signup-page";
 
 const schema = yup.object().shape({
     purchaseOrderId: yup.string().required("Purchase Order Id is required"),
@@ -15,7 +15,8 @@ const schema = yup.object().shape({
     termsAndConditionsDocument: yup.mixed().required("T&C Document is required")
 })
 
-const FormRequestForQuotation = () => {
+const FormRequestForQuotation = (props) => {
+    const {handleFormSubmit} = props;
     const classes = useStyles();
     const token = useSelector(state => state.token)
     const [purchaseOrders, setPurchaseOrders] = useState([])
@@ -26,38 +27,21 @@ const FormRequestForQuotation = () => {
         criteriaMode: "all"
     })
 
-    const fetchData = async (type) => {
-        switch (type) {
-            case "getAllPO":
-                const po = await getAllPO(token).then(result => result);
-                setPurchaseOrders(po)
-                break
-            default:
-                break
-        }
+    const fetchData = async () => {
+        const po = await getAllPO(token).then(response => response).then(result => result.json());
+        setPurchaseOrders(po)
     }
 
     useEffect(() => {
-        fetchData("getAllPO").then()
+        fetchData().then()
     }, [])
 
-    const handleOnSubmit = (data) => {
-        const formData = new FormData()
-        formData.append("purchaseOrderId", data.purchaseOrderId);
-        formData.append("message", data.message);
-        formData.append("quotationDocument", data.quotationDocument[0]);
-        formData.append("termsAndConditionsDocument", data.termsAndConditionsDocument[0]);
-
-        console.log(formData)
-
-        reset()
-    }
 
     return (
-        <form onSubmit={handleSubmit(handleOnSubmit)} className={classes.contentArea}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
             <FormControl fullWidth={true}>
                 <InputLabel>Purchase Order</InputLabel>
-                <Select native={true} error={!!errors.purchaseOrderId}>
+                <Select native={true} {...register("purchaseOrderId")} error={!!errors.purchaseOrderId}>
                     <option value="">{}</option>
                     {purchaseOrders.map(
                         purchaseOrder =>

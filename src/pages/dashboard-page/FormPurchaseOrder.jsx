@@ -2,11 +2,9 @@ import React from "react";
 import {useForm} from "react-hook-form";
 import * as yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {useSelector} from "react-redux";
 import CustomButton from "../../components/customControls/CustomButton";
 import {FormControl, FormHelperText, InputLabel, Select} from "@material-ui/core";
-import {useStyles} from "../signup-page/EmployeeSignupForm";
-import {savePO} from "../../services/purchase-order-service";
+import {useStyles} from "../signup-page";
 
 const schema = yup.object().shape({
     rfpTemplate: yup.mixed().required("The field is required"),
@@ -14,35 +12,23 @@ const schema = yup.object().shape({
     status: yup.string().required("status is required"),
 });
 
-const postData = async (body, token) => {
-    await savePO(token, body)
-        .then(resp => resp.ok ? alert("Purchase Order added successfully  ") : alert("Error saving the purchase Order"))
-  };
 
-const FormPurchaseOrder = () => {
-    const token = useSelector((state) => state.token);
+const FormPurchaseOrder = (props) => {
+    const {handleFormSubmit} = props;
+
     const classes = useStyles();
     const {
         register,
         handleSubmit,
-        reset,
         formState: {errors},
     } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
     });
 
-    const submitForm = (data) => {
-        const formData = new FormData();
-        formData.append("rfpTemplate", data.rfpTemplate[0]);
-        formData.append("rfiTemplate", data.rfiTemplate[0]);
-        formData.append("status", data.status);
-        postData(formData, token);
-        reset();
-    };
 
     return (
-        <form onSubmit={handleSubmit(submitForm)} className={classes.contentArea}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
             <FormControl fullWidth={true}>
                 <h6>Request for Quotation</h6>
                 <input

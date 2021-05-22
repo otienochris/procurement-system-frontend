@@ -17,10 +17,10 @@ const loginSchema = yup.object().shape({
   username: yup
     .string()
     .matches(
-      /^([A-Z]\d{2}\/\d{5}\/\d{2})|([A-Z]\d{9}[A-Z])$/,
+      /^([A-Z]\d{2}\/\d{5}\/\d{2})$|^[A-Z]\d{9}[A-Z]$/,
       "enter a valid username"
     )
-    .required("please enter your unsername"),
+    .required("please enter your username"),
   password: yup.string().required("please enter your password"),
 });
 
@@ -51,10 +51,6 @@ function LoginForm({
         setIsUserDisabled(true);
       }
     } catch (errors) {
-      // console.log(errors)
-      // alert(
-      //   inputData.username + "Sorry, failed to connenct to the server, please check your connection."
-      // );
       alert(errors)
       setIsLoading(false);
     }
@@ -72,9 +68,8 @@ function LoginForm({
   });
 
   const submitForm = (inputData) => {
-    console.log(inputData)
     dispatch(userActions("SET_USERNAME", inputData.username));
-    fetchData(inputData);
+    fetchData(inputData).then();
     reset();
   };
 

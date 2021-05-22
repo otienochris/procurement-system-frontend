@@ -7,10 +7,8 @@ import {
 const purchaseOrderDomainUrl = apiDomain + "/purchase-orders";
 
 export const savePO = async (token, body) => {
-    return await
-        fetch(purchaseOrderDomainUrl + "/",
+    return await fetch(purchaseOrderDomainUrl + "/",
             requestHeaderWithBodyAfterAuthentication("POST", body, token))
-            .then(resp => resp)
 }
 
 // fet all purchase orders

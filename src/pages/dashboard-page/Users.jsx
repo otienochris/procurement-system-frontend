@@ -29,11 +29,9 @@ function Users({ employees, suppliers, departmentHeads, setEmployees, setSupplie
           <Tab label="Head of Department" />
         </Tabs>
       </AppBar>
-      {selectedTab === 0 && <Suppliers suppliers={suppliers} setSuppliers={setSuppliers}/>}
-      {selectedTab === 1 && <Employees employees={employees} setEmployees={setEmployees}/>}
-      {selectedTab === 2 && (
-        <DepartmentHeads departmentHeads={departmentHeads} setDepartmentHeads={setDepartmentHeads} />
-      )}
+      {selectedTab === 0 && <Suppliers />}
+      {selectedTab === 1 && <Employees />}
+      {selectedTab === 2 && <DepartmentHeads />}
     </Paper>
   );
 }
