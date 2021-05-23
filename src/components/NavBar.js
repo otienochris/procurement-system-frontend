@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 // import { Home } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { isLoggedInActions, tokenActions, userActions } from "../actions";
+import {toast} from "react-toastify";
+import {options} from "../pages/login-page";
 
 function NavBar() {
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
@@ -18,7 +20,8 @@ function NavBar() {
   const handleLogOut = () => {
     dispatch(isLoggedInActions("SIGN_OUT"));
     dispatch(tokenActions("CLEAR_TOKEN"));
-    dispatch(userActions("CLEAR_USERNAME"))
+    dispatch(userActions("CLEAR_USERNAME"));
+    toast.info("Logged Out", options)
   };
   return (
     <AppBar color="default" position="fixed">

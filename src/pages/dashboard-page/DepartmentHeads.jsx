@@ -6,6 +6,8 @@ import {getAllDepartmentHeads, saveDepartmentHead} from "../../services/users/de
 import {useSelector} from "react-redux";
 import FormDepartmentsHeadsSignup from "../signup-page/Forms/FormDepartmentsHeadsSignup";
 import CustomButton from "../../components/customControls/CustomButton";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 const DepartmentHeads = () => {
     const classes = useStyles();
@@ -25,12 +27,14 @@ const DepartmentHeads = () => {
                     if (response.ok) {
                         setUpdateTable(true);
                         setOpenPopup(false);
-                        alert("Department Head Saved Successfully");
+                        toast.success("Department Head Saved Successfully", toastOptions);
                     } else {
                         setOpenPopup(false);
-                        alert("Failed to save the Department Head");
+                        toast.error("Failed to save the Department Head", toastOptions)
                     }
-                }).then().catch(error => console.log(error))
+                }).then().catch(error => {
+                    toast.info("Oop! Could not connect to the server", toastOptions)
+                })
                 break;
             default:
                 break;

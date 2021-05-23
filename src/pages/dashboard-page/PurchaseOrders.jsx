@@ -9,6 +9,9 @@ import ImportContactsIcon from '@material-ui/icons/ImportContacts';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import {IconButton} from "@material-ui/core";
 import CustomButton from "../../components/customControls/CustomButton";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
+import {openNewWindow} from "./PurchaseRequisitions";
 
 const PurchaseOrders = () => {
     const classes = useStyles();
@@ -27,14 +30,15 @@ const PurchaseOrders = () => {
                 await savePO(token, body).then(response => {
                     if (response.ok) {
                         setUpdateTable(true);
-                        setOpenPopup(false)
-                        alert("Purchase Order added successfully");
-
+                        setOpenPopup(false);
+                        toast.success("Purchase Order added successfully", toastOptions);
                     } else {
                         setOpenPopup(false);
-                        alert("Error Saving Purchase Order");
+                        toast.error("Error Saving Purchase Order", toastOptions);
                     }
-                }).then()
+                }).then().catch(reason => {
+                    toast.info("Oops! Could not connect to the server", toastOptions)
+                })
                 setUpdateTable(false)
                 break
             default:
@@ -64,16 +68,24 @@ const PurchaseOrders = () => {
                     {
                         title: "RFI Document", field: "rfiTemplateDownloadUrl", render: (rowData) => {
                             return <div>
-                                <IconButton><ImportContactsIcon/></IconButton>
-                                <IconButton><GetAppIcon/></IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfiTemplateDownloadUrl)}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfiTemplateDownloadUrl)}>
+                                    <GetAppIcon/>
+                                </IconButton>
                             </div>
                         }
                     },
                     {
                         title: "RFP Document", field: "rfpTemplateDownloadUrl", render: (rowData) => {
                             return <div>
-                                <IconButton><ImportContactsIcon/></IconButton>
-                                <IconButton><GetAppIcon/></IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfpTemplateDownloadUrl)}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfpTemplateDownloadUrl)}>
+                                    <GetAppIcon/>
+                                </IconButton>
                             </div>
                         }
                     },

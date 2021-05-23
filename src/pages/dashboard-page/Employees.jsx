@@ -6,6 +6,8 @@ import FormEmployeeSignup from "../signup-page/Forms/FormEmployeeSignup";
 import {getAllEmployees, saveEmployee} from "../../services/users/employee-service";
 import {useSelector} from "react-redux";
 import CustomButton from "../../components/customControls/CustomButton";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 export const useStyles = makeStyles((theme) => ({
     spacingStyle: {
@@ -20,20 +22,6 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: "start",
     },
 }));
-
-const addEmployee = async (url, requestHeader) => {
-    try {
-        const response = await fetch(url, requestHeader);
-        const result = await response.json();
-        if (response.ok) {
-            alert("please verify your email to activate your account");
-        } else {
-            alert(result.message);
-        }
-    } catch (errors) {
-        console.log(errors);
-    }
-};
 
 function Employees() {
     const classes = useStyles();
@@ -56,13 +44,15 @@ function Employees() {
                     .then(response => {
                         if (response.ok) {
                             setUpdateTable(true);
-                            setOpenPopup(false)
-                            alert("Employee added successfully");
+                            setOpenPopup(false);
+                            toast.success("Employee added successfully", toastOptions);
                         } else {
                             setOpenPopup(false);
-                            alert("Failed to add employees");
+                            toast.error("Failed to add employees", toastOptions);
                         }
-                    }).then();
+                    }).then().catch(reason => {
+                        toast.info("Oop! Could not connect to the server", toastOptions)
+                    });
                 break;
             default:
                 break;

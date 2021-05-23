@@ -7,6 +7,8 @@ import {CircularProgress, FormControl, FormHelperText, InputLabel, Select} from 
 import {useStyles} from "../signup-page";
 import {getAllPurchaseRequisitions} from "../../services/purchase-requisition-service";
 import {useSelector} from "react-redux";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 const schema = yup.object().shape({
     rfpTemplate: yup.mixed().required("The field is required"),
@@ -40,13 +42,16 @@ const FormPurchaseOrder = (props) => {
             .then(response => {
                 return response;
             })
-            .then(response => response.json()).catch(errors => {
-                setIsLoading(false)
+            .then(response => response.json())
+            .catch(errors => {
+                setIsLoading(false);
+                toast.info("Oop! Could not connect to the server", toastOptions);
             });
+
+        setPurchaseRequisitions(pr);
         if (pr.length !== 0){
             setSuccessfulFetch(true)
         }
-        setPurchaseRequisitions(pr);
         setIsLoading(false)
     }
 

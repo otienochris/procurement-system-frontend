@@ -7,6 +7,8 @@ import CustomButton from "../../components/customControls/CustomButton";
 import {getAllPO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
 import {useStyles} from "../signup-page";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 const schema = yup.object().shape({
     purchaseOrderId: yup.string().required("Purchase Order Id is required"),
@@ -18,7 +20,10 @@ export const fetchPO = async (setIsLoading, setSuccessfulFetch, setPurchaseOrder
     const po = await getAllPO(token)
         .then(resp => resp)
         .then(resp => resp.json())
-        .catch(err => setIsLoading(false));
+        .catch(err => {
+            toast.info("Oop! Could not connect to the server", toastOptions)
+            setIsLoading(false)
+        });
     if (po.length !== 0){
         setSuccessfulFetch(true)
     }

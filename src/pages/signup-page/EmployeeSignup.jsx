@@ -3,29 +3,28 @@ import FormEmployeeSignup from "./Forms/FormEmployeeSignup";
 import {saveEmployee} from "../../services/users/employee-service";
 import {userActions} from "../../actions";
 import {useDispatch} from "react-redux";
+import {toast} from "react-toastify";
+import {options} from "../login-page";
 
 
 const EmployeeSignup = (props) => {
     const {setIsLoading, setIsSuccessful} = props;
     const dispatch = useDispatch();
-    let message;
     const fetchData = async (body) => {
         setIsLoading(true);
         await saveEmployee(body).then(response => {
             if (response.ok){
                 setIsSuccessful(true);
-                message = "signup successful"
+                toast.success("Signup Successfully", options);
             }else {
                 setIsSuccessful(false);
-                message = "signup failed"
+                toast.error("Error signing up", options);
             }
-        }).then(result => {
-            console.log(result);
-
-            setIsLoading(false)
-        }).catch(error => console.log(error))
+        }).then().catch(error =>{
+            toast.info("Oops! Could not connect to the server", options);
+            setIsLoading(false);
+        })
         setIsLoading(false);
-        { message && alert(message) }
     }
 
     const submitEmployeeForm = (data) => {

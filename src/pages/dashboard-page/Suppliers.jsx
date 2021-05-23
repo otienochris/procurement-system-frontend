@@ -6,6 +6,8 @@ import {useStyles} from "./Employees";
 import FormSupplierSignup from "../signup-page/Forms/FormSupplierSignup";
 import {getAllSuppliers, saveSupplier} from "../../services/users/supplier-service";
 import CustomButton from "../../components/customControls/CustomButton";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 function Suppliers(props) {
     const token = useSelector((state) => state.token);
@@ -27,12 +29,14 @@ function Suppliers(props) {
                     .then(response => {
                         if (response.ok) {
                             setUpdateTable(true);
-                            setOpenPopup(false)
-                            alert("Successfully added");
+                            setOpenPopup(false);
+                            toast.success("Supplier Successfully added", toastOptions);
                         } else {
-                            alert("Error saving supplier")
+                            toast.error("Error saving supplier", toastOptions);
                         }
-                    }).then();
+                    }).then().catch(reason => {
+                        toast.info("Oops! Could not connect to the server", toastOptions);
+                    });
                 break;
             default:
                 break;
@@ -45,7 +49,6 @@ function Suppliers(props) {
 
     const handleFormSubmit = (data) => {
         delete data.password2;
-        alert("clicked");
         fetchData("saveSupplier", data).then();
     }
 

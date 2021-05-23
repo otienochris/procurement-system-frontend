@@ -11,6 +11,8 @@ import {
   requestHeaderWithBodyBeforeAuthentication,
 } from "../../components/requestHeaders";
 import { Redirect } from "react-router";
+import {toast} from "react-toastify";
+import {options} from "./index";
 
 const useStyles = makeStyles((theme) => ({
   underline: {
@@ -75,21 +77,21 @@ function ChangePassword({setForgotPassword}) {
       setIsLoading(false);
       if (response.ok) {
         setIsSuccess(true);
-        setForgotPassword(false)
-        alert("Password changed successfully");
+        setForgotPassword(false);
+        toast.success("Password changed successfully", options);
       } else {
-        alert("Error while changing password");
+        toast.error("Error while changing password", options);
       }
     } catch (fetchErrors) {
       setIsLoading(false);
-      console.log(fetchErrors);
+      toast.info("Oop! Could not connect to the server", options);
     }
   };
 
   const onSubmit = (inputData) => {
     delete inputData.newPassword2; // we don't need the confirm password
     console.log(inputData);
-    submitNewPassword(inputData);
+    submitNewPassword(inputData).then();
     reset();
   };
 

@@ -82,11 +82,9 @@ function Index() {
                                     <Tab label="Head Of Department"/>
                                 </Tabs>
                             </AppBar>
-                            {selectedTab === 0 &&
-                            <EmployeeSignup setIsLoading={setIsLoading} setIsSuccessful={setIsSuccessful}/>}
-                            {selectedTab === 1 && <SignupSupplier/>}
-                            {selectedTab === 2 &&
-                            <DepartmentHeadsSignup setIsLoading={setIsLoading} setIsSuccessful={setIsSuccessful}/>}
+                            {selectedTab === 0 && <EmployeeSignup setIsLoading={setIsLoading} setIsSuccessful={setIsSuccessful}/>}
+                            {selectedTab === 1 && <SignupSupplier setIsLoading={setIsLoading} setIsSuccessful={setIsSuccessful}/>}
+                            {selectedTab === 2 && <DepartmentHeadsSignup setIsLoading={setIsLoading} setIsSuccessful={setIsSuccessful}/>}
                         </CustomPaper>
                     ) : (
                         <CustomPaper>

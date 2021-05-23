@@ -6,7 +6,9 @@ import AccountActivation from "../../components/AccountActivation";
 import CustomPaper from "../../components/customControls/CustomPaper";
 import ForgotPassword from "./ForgotPassword";
 import LoginForm from "./LoginForm";
+import {toast} from "react-toastify";
 
+export const options = {position: "top-center"}
 const useStyles = makeStyles((theme) => ({
   container: {
     minHeight: "85vh",
@@ -38,8 +40,6 @@ function Index() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const [isUserDisabled, setIsUserDisabled] = useState(false);
-
-  // const dispatch = useDispatch();
 
   return (
     <Grid container className={customClasses.container}>

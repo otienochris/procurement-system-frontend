@@ -9,6 +9,8 @@ import {IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import {openNewWindow} from "./PurchaseRequisitions";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 const RequestsForInformation = () => {
     const [openPopup, setOpenPopup] = useState(false)
@@ -29,15 +31,17 @@ const RequestsForInformation = () => {
                     .then(response => {
                         if(response.ok){
                             setUpdateTable(true);
-                            setOpenPopup(false)
-                            alert("Request For information added successfully");
+                            setOpenPopup(false);
+                            toast.success("Request For information added successfully", toastOptions);
                         } else{
                             setOpenPopup(false);
-                            alert("Error adding Request For information")
+                            toast.error("Error adding Request For information", toastOptions);
                         }
                     })
-                    .then()
-                setUpdateTable(false)
+                    .then().catch(reason => {
+                        toast.info("Oops! Error connecting to the server", toastOptions);
+                    })
+                setUpdateTable(false);
                 break;
             default:
                 break;
@@ -65,8 +69,12 @@ const RequestsForInformation = () => {
                     {
                         title: "Request for Information Document", field: "rfiUrl", render: (rowData) => {
                             return <div>
-                                <IconButton onClick={()=> openNewWindow(rowData.rfiUrl)}><ImportContactsIcon/></IconButton>
-                                <IconButton><GetAppIcon/></IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfiUrl)}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfiUrl)}>
+                                    <GetAppIcon/>
+                                </IconButton>
                             </div>
                         }
                     }]}

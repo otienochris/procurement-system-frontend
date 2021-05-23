@@ -9,6 +9,8 @@ import Signup from "./pages/signup-page/";
 import { CssBaseline, makeStyles } from "@material-ui/core";
 import Profile from "./pages/profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import {toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 const useStyles = makeStyles({
   appStyle: {
@@ -21,6 +23,12 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
 });
+
+export const toastOptions = {
+  position: "bottom-left"
+}
+
+toast.configure();
 function App() {
   const classes = useStyles();
   return (

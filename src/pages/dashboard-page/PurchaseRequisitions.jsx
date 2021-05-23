@@ -8,6 +8,8 @@ import {useSelector} from "react-redux";
 import {IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../App";
 
 export const openNewWindow = (url) => {
     window.open(url)
@@ -32,13 +34,15 @@ function PurchaseRequisitions() {
                     if (resp.ok) {
                         setUpdateTable(true);
                         setOpenPopup(false);
-                        alert("Purchase Requisition added successfully");
+                        toast.success("Purchase Requisition added successfully", toastOptions);
                     } else {
                         setOpenPopup(false);
-                        alert("error adding purchase requisition");
+                        toast.error("error adding purchase requisition", toastOptions);
                     }
                     setUpdateTable(false)
-                }).then()
+                }).then().catch(reason => {
+                    toast.info("Oops! Could not connect to the server", toastOptions)
+                })
                 break
             default:
                 break

@@ -17,6 +17,8 @@ import {
   sendChangePasswordTokenUrl,
 } from "../../components/requestHeaders";
 import ChangePassword from "./ChangePassword";
+import {options} from "./index";
+import {toast} from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   underline: {
@@ -72,21 +74,21 @@ function ForgotPassword(props) {
       if (response.ok) {
         // setForgotPassword(false);
         setIsSuccess(true);
-        alert("Check your mail to change your password");
+        toast.success("Check your mail to change your password", options)
       } else {
         // setForgotPassword(false);
-        alert(
-          "Error while sending mail. make sure it is the correct email address"
-        );
+        toast.error("Error sending mail. make sure it is the correct email address", options)
+
       }
     } catch (fetchErrors) {
       setForgotPassword(false);
       setIsLoading(false);
+      toast.info("Oop! Could not reach the server", options)
     }
   };
 
   const onSubmit = (inputData) => {
-    sendMail(inputData);
+    sendMail(inputData).then();
     reset();
   };
 

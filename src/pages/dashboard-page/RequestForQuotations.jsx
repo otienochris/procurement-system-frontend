@@ -8,6 +8,9 @@ import {getAllRFQs, saveRFQ} from "../../services/request-for-quotation-service"
 import {IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import {toast} from "react-toastify";
+import {openNewWindow} from "./PurchaseRequisitions";
+import {toastOptions} from "../../App";
 
 function RequestForQuotations() {
     const classes = useStyles();
@@ -21,7 +24,6 @@ function RequestForQuotations() {
             case "getAllRFQs":
                 const RFQs = await getAllRFQs(token).then(response => response).then(result => result.json());
                 setRequestsForQuotations(RFQs);
-                console.log(requestsForQuotation)
                 break;
             case "saveRFQ":
                 await saveRFQ(body, token)
@@ -29,13 +31,15 @@ function RequestForQuotations() {
                         if(response.ok){
                             setUpdateTable(true);
                             setOpenPopup(false);
-                            alert("Request for quotation added successful");
+                            toast.success("Request for quotation added successful", toastOptions);
                         }else {
                             setOpenPopup(false);
-                            alert("Error adding Request for Quotation");
+                            toast.error("Error adding Request for Quotation", toastOptions);
                         }
                     })
-                    .then()
+                    .then().catch(reason => {
+                        toast.info("Oops! Could not connect to the server", toastOptions)
+                    })
                 setUpdateTable(false);
                 break
             default:
@@ -67,16 +71,24 @@ function RequestForQuotations() {
                     {
                         title: "Quotation Document", field: "quotationDownloadUrl", render: (rowData) => {
                             return <div>
-                                <IconButton><ImportContactsIcon/></IconButton>
-                                <IconButton><GetAppIcon/></IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.quotationDownloadUrl)}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.quotationDownloadUrl)}>
+                                    <GetAppIcon/>
+                                </IconButton>
                             </div>
                         }
                     },
                     {
                         title: "Terms and Conditions", field: "termsAndConditionDownloadUrl", render: (rowData) => {
                             return <div>
-                                <IconButton><ImportContactsIcon/></IconButton>
-                                <IconButton><GetAppIcon/></IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.termsAndConditionDownloadUrl)}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.termsAndConditionDownloadUrl)}>
+                                    <GetAppIcon/>
+                                </IconButton>
                             </div>
                         }
                     },

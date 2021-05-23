@@ -1,6 +1,8 @@
 import React from "react";
 import FormDepartmentsHeadsSignup from "./Forms/FormDepartmentsHeadsSignup";
 import {saveDepartmentHead} from "../../services/users/department-heads-service";
+import {toast} from "react-toastify";
+import {options} from "../login-page";
 
 const DepartmentHeadsSignup = (props) => {
 
@@ -11,15 +13,16 @@ const DepartmentHeadsSignup = (props) => {
         setIsLoading(true);
         await saveDepartmentHead(data).then(response => {
             if (response.ok) {
-                alert("ok")
+                toast.success("Signup successfully", options);
                 setIsSuccessful(true);
             } else {
-                alert("failed");
+                toast.error("Error Signing you up", options);
                 setIsSuccessful(false);
             }
-        }).then(result => {
-            console.log(result)
-        }).catch(error => console.log(error))
+        }).then().catch(error => {
+            setIsLoading(false);
+            toast.info("Oop! Could not connect to the server", options);
+        })
         setIsLoading(false)
     }
 
