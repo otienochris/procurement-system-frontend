@@ -7,44 +7,73 @@ import {yupResolver} from "@hookform/resolvers/yup";
 import {useSelector} from "react-redux";
 import {savePurchaseRequisition} from "../../services/purchase-requisition-service";
 import {useStyles} from "../signup-page";
+import CustomTextField from "../../components/customControls/CustomTextField";
 
 const schema = yup.object().shape({
-    acquisitionDocument: yup.mixed().required("Upload Acquisition Document "),
-    needDocument: yup.mixed().required("Upload Need Document"),
-    analysisDocument: yup.mixed().required("Upload Analysis Document"),
-    emergencyDocument: yup.mixed().required("Upload Emergency Document"),
+    // acquisitionDocument: yup.mixed().required(),
+    needDocument: yup.mixed().required(),
+    analysisDocument: yup.mixed().required(),
+    emergencyDocument: yup.mixed().required(),
+    description: yup.string().required()
 })
 
 const FormPurchaseRequisition = (props) => {
     const {handleFormSubmit} = props
     const classes = useStyles();
-    const {register, reset, handleSubmit, formState: {errors}} = useForm({
+    const {register, handleSubmit, formState: {errors}} = useForm({
         mode: "onChange",
         resolver: yupResolver(schema),
         criteriaMode: "all"
     })
 
-
     return (
         <form className={classes.contentArea} onSubmit={handleSubmit(handleFormSubmit)}>
-            <FormControl error={!!errors.acquisitionDocument}>
-                <h6>Acquisition Document</h6>
-                <input required type={"file"} accept={"application/pdf"} {...register("acquisitionDocument")}  />
-                <FormHelperText>{errors.acquisitionDocument?.message}</FormHelperText>
-            </FormControl>
+            {/*<FormControl error={!!errors.acquisitionDocument} fullWidth>*/}
+            {/*    <h6>Acquisition Document</h6>*/}
+            {/*    <input*/}
+            {/*        type={"file"}*/}
+            {/*        accept={"application/pdf"}*/}
+            {/*        {...register("acquisitionDocument")}*/}
+            {/*    />*/}
+            {/*    <FormHelperText>*/}
+            {/*        {errors.acquisitionDocument?.message}*/}
+            {/*    </FormHelperText>*/}
+            {/*</FormControl>*/}
+            <CustomTextField
+                label="Description"
+                placeholder="Provide a brief description of the need, emergency and items needed"
+                fullWidth
+                multiline
+                {...register("description")}
+                inputError={errors.description}
+            />
             <FormControl error={!!errors.analysisDocument}>
                 <h6>Analysis Document</h6>
-                <input required type="file" accept={"application/pdf"} {...register("analysisDocument")} />
-                <FormHelperText>{errors.analysisDocument?.message}</FormHelperText>
+                <input
+                    type="file"
+                    accept={"application/pdf"}
+                    {...register("analysisDocument")}
+                />
+                <FormHelperText>
+                    {errors.analysisDocument?.message}
+                </FormHelperText>
             </FormControl>
             <FormControl error={!!errors.emergencyDocument}>
                 <h6>Emergency Document</h6>
-                <input required={true} type="file" accept={"application/pdf"} {...register("emergencyDocument")} />
-                <FormHelperText>{errors.emergencyDocument?.message}</FormHelperText>
+                <input
+                    type="file"
+                    accept={"application/pdf"}
+                    {...register("emergencyDocument")} />
+                <FormHelperText>
+                    {errors.emergencyDocument?.message}
+                </FormHelperText>
             </FormControl>
             <FormControl error={!!errors.needDocument}>
                 <h6>Need Document</h6>
-                <input required={true} type="file" accept={"application/pdf"} {...register("needDocument")} />
+                <input
+                    type="file"
+                    accept={"application/pdf"}
+                    {...register("needDocument")} />
                 <FormHelperText>{errors.needDocument?.message}</FormHelperText>
             </FormControl>
             <CustomButton text={"Submit"} type={"submit"}/>

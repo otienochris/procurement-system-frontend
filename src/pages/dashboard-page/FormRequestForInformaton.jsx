@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import * as yup from "yup"
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {FormControl, FormHelperText, InputLabel, Select} from "@material-ui/core";
+import {CircularProgress, FormControl, FormHelperText, InputLabel, Select} from "@material-ui/core";
 import CustomButton from "../../components/customControls/CustomButton";
 import {getAllPO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
@@ -13,17 +13,28 @@ const schema = yup.object().shape({
     rfi: yup.mixed().required("Please upload a Request For Information file")
 })
 
+export const fetchPO = async (setIsLoading, setSuccessfulFetch, setPurchaseOrders, token) => {
+    setIsLoading(true)
+    const po = await getAllPO(token)
+        .then(resp => resp)
+        .then(resp => resp.json())
+        .catch(err => setIsLoading(false));
+    if (po.length !== 0){
+        setSuccessfulFetch(true)
+    }
+    setPurchaseOrders(po);
+    setIsLoading(false)
+}
 
 const FormRequestForInformation = (props) => {
     const {handleFormSubmit} = props
     const classes = useStyles();
     const token = useSelector(state => state.token);
-    const [purchaseOrders, setPurchaseOrders] = useState([])
+    const [purchaseOrders, setPurchaseOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [successfulFetch, setSuccessfulFetch] = useState(false);
 
-    const fetchPO = async () => {
-        const po = await getAllPO(token).then(resp => resp).then(resp => resp.json());
-        setPurchaseOrders(po);
-    }
+
 
     const {register, reset, handleSubmit, formState: {errors}} = useForm({
         resolver: yupResolver(schema),
@@ -32,10 +43,11 @@ const FormRequestForInformation = (props) => {
     })
 
     useEffect(() => {
-        fetchPO().then()
+        fetchPO(setIsLoading, setSuccessfulFetch,setPurchaseOrders, token).then()
     }, [])
 
     return (
+        isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> : successfulFetch ?
         <form className={classes.contentArea} onSubmit={handleSubmit(handleFormSubmit)}>
             <FormControl error={!!errors.purchaseOrderId} fullWidth={true}>
                 <InputLabel>Purchase Order</InputLabel>
@@ -57,11 +69,12 @@ const FormRequestForInformation = (props) => {
             </FormControl>
             <FormControl error={!!errors.rfi} variant={"outlined"} fullWidth={true}>
                 <h6>Request For Information Document*</h6>
-                <input type="file" accept={"application/pdf"} {...register("rfi")} />
+                // todo add accept
+                <input type="file" {...register("rfi")} />
                 <FormHelperText>{errors.rfi?.message}</FormHelperText>
             </FormControl>
             <CustomButton text={"Submit"} type={"submit"}/>
-        </form>
+        </form> : <h5>Sorry, could not find any purchase order</h5>
     )
 }
 

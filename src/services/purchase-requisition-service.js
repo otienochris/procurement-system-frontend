@@ -11,7 +11,6 @@ export const savePurchaseRequisition = async (token, body) => {
     return await
         fetch(purchaseRequisitionDomainUrl + "/",
             requestHeaderWithBodyAfterAuthentication("POST", body, token))
-            .then(resp => resp);
 }
 
 export const getAllPurchaseRequisitions = async (token) => {

@@ -29,7 +29,6 @@ const EmployeeSignup = (props) => {
     }
 
     const submitEmployeeForm = (data) => {
-        alert("submit button clicked");
         dispatch(userActions("SET_USERNAME", data.empId))
         fetchData(data).then()
     }

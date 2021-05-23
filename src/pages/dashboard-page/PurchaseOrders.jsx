@@ -8,6 +8,7 @@ import {useSelector} from "react-redux";
 import ImportContactsIcon from '@material-ui/icons/ImportContacts';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import {IconButton} from "@material-ui/core";
+import CustomButton from "../../components/customControls/CustomButton";
 
 const PurchaseOrders = () => {
     const classes = useStyles();
@@ -24,10 +25,13 @@ const PurchaseOrders = () => {
                 break
             case "savePO":
                 await savePO(token, body).then(response => {
-                    if (response.ok){
-                        alert("Purchase Order added successfully");
+                    if (response.ok) {
                         setUpdateTable(true);
-                    }else{
+                        setOpenPopup(false)
+                        alert("Purchase Order added successfully");
+
+                    } else {
+                        setOpenPopup(false);
                         alert("Error Saving Purchase Order");
                     }
                 }).then()
@@ -42,7 +46,7 @@ const PurchaseOrders = () => {
         const formData = new FormData();
         formData.append("rfpTemplate", data.rfpTemplate[0]);
         formData.append("rfiTemplate", data.rfiTemplate[0]);
-        formData.append("status", data.status);
+        formData.append("purchaseRequisitionId", data.purchaseRequisitionId);
         fetchData("savePO", formData).then()
     };
 
@@ -56,6 +60,7 @@ const PurchaseOrders = () => {
                 title="Purchase Orders"
                 columns={[
                     {title: "Serial No", field: "id"},
+                    {title: "Purchase Requisition Id", field: "purchaseRequisitionId"},
                     {
                         title: "RFI Document", field: "rfiTemplateDownloadUrl", render: (rowData) => {
                             return <div>
@@ -72,9 +77,19 @@ const PurchaseOrders = () => {
                             </div>
                         }
                     },
-                    {title: "Status", field: "status", defaultGroupOrder:0},
-                    {title: "Date Created", field: "dataCreated"},
-                    {title: "Data Modified", field: "dateModified"}
+                    {
+                        title: "Status", field: "status", defaultGroupOrder: 0, render: (rowData) => {
+                            console.log(rowData)
+                            if (rowData.status === "PENDING" || rowData === "PENDING") {
+                                return <CustomButton color={"default"} text={rowData.status || rowData}/>
+                            } else if (rowData.status === "CANCEllED" || rowData ===  "CANCEllED") {
+                                return <CustomButton text={rowData.status || rowData} style={{backgroundColor: "red"}}/>
+                            } else if (rowData.status === "APPROVED" || rowData === "APPROVED") {
+                                return <CustomButton text={rowData.status || rowData} style={{backgroundColor: "green"}}/>
+                            }
+                        }
+                    },
+                    {title: "Date Created", field: "dataCreated"}
                 ]}
                 data={purchaseOrders}
                 setOpenPopup={setOpenPopup}

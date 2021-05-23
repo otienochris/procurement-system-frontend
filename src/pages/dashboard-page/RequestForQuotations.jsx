@@ -27,9 +27,11 @@ function RequestForQuotations() {
                 await saveRFQ(body, token)
                     .then(response => {
                         if(response.ok){
-                            setUpdateTable(true)
+                            setUpdateTable(true);
+                            setOpenPopup(false);
                             alert("Request for quotation added successful");
                         }else {
+                            setOpenPopup(false);
                             alert("Error adding Request for Quotation");
                         }
                     })

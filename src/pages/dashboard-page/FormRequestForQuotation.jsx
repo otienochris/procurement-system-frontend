@@ -2,11 +2,11 @@ import React, {useEffect, useState} from 'react'
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup"
-import {FormControl, FormHelperText, InputLabel, Select, TextField} from "@material-ui/core";
+import {CircularProgress, FormControl, FormHelperText, InputLabel, Select, TextField} from "@material-ui/core";
 import CustomButton from "../../components/customControls/CustomButton";
-import {getAllPO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
 import {useStyles} from "../signup-page";
+import {fetchPO} from "./FormRequestForInformaton";
 
 const schema = yup.object().shape({
     purchaseOrderId: yup.string().required("Purchase Order Id is required"),
@@ -18,8 +18,10 @@ const schema = yup.object().shape({
 const FormRequestForQuotation = (props) => {
     const {handleFormSubmit} = props;
     const classes = useStyles();
-    const token = useSelector(state => state.token)
-    const [purchaseOrders, setPurchaseOrders] = useState([])
+    const token = useSelector(state => state.token);
+    const [purchaseOrders, setPurchaseOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [successfulFetch, setSuccessfulFetch] = useState(false);
 
     const {register, reset, handleSubmit, formState: {errors}} = useForm({
         mode: "onChange",
@@ -27,17 +29,14 @@ const FormRequestForQuotation = (props) => {
         criteriaMode: "all"
     })
 
-    const fetchData = async () => {
-        const po = await getAllPO(token).then(response => response).then(result => result.json());
-        setPurchaseOrders(po)
-    }
 
     useEffect(() => {
-        fetchData().then()
+        fetchPO(setIsLoading, setSuccessfulFetch, setPurchaseOrders, token).then()
     }, [])
 
 
     return (
+        isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> : successfulFetch ?
         <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
             <FormControl fullWidth={true}>
                 <InputLabel>Purchase Order</InputLabel>
@@ -64,7 +63,7 @@ const FormRequestForQuotation = (props) => {
                 <FormHelperText>{errors.termsAndConditionsDocument?.message}</FormHelperText>
             </FormControl>
             <CustomButton text={"Submit"} type={"submit"}/>
-        </form>
+        </form> : <h5>Error, could not find any purchase order</h5>
     )
 }
 

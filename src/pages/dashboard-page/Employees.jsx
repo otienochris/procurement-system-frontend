@@ -5,12 +5,19 @@ import Popup from "../../components/customControls/Popup";
 import FormEmployeeSignup from "../signup-page/Forms/FormEmployeeSignup";
 import {getAllEmployees, saveEmployee} from "../../services/users/employee-service";
 import {useSelector} from "react-redux";
+import CustomButton from "../../components/customControls/CustomButton";
 
 export const useStyles = makeStyles((theme) => ({
     spacingStyle: {
         margin: "auto auto",
         maxWidth: "95%",
         marginTop: "12vh",
+    },
+    fileButtons: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "start",
     },
 }));
 
@@ -47,11 +54,13 @@ function Employees() {
             case "saveEmployee":
                 await saveEmployee(body)
                     .then(response => {
-                        if(response.ok) {
+                        if (response.ok) {
+                            setUpdateTable(true);
+                            setOpenPopup(false)
                             alert("Employee added successfully");
-                            setUpdateTable(true)
                         } else {
-                            alert("Failed to add employees")
+                            setOpenPopup(false);
+                            alert("Failed to add employees");
                         }
                     }).then();
                 break;
@@ -60,7 +69,7 @@ function Employees() {
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchData("getAllEmployees").then()
     }, [updateTable])
 
@@ -77,24 +86,26 @@ function Employees() {
                     {title: "Name", field: "name"},
                     {title: "Email", field: "email"},
                     {title: "Position", field: "position"},
-                    {title: "Role", field: "roles.role", defaultGroupOrder: 1},
+                    {
+                        title: "Role", field: "roles.role",
+                        // defaultGroupOrder: 0
+                    },
                     {
                         title: "STATUS",
                         field: "isActive",
-                        lookup: {false: "Disabled", true: "Active"},
-                        // editable: false,
                         default: "false",
-                        defaultGroupOrder: 0
+                        // defaultGroupOrder: 0,
+                        render: (rowData) =>
+                            rowData.isActive ? <CustomButton text={"Active"} style={{backgroundColor: "green"}}/>
+                                : <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/>
                     },
-                    // { title: "Date Created", field: "dateCreated" },
-                    // { title: "Date Modified", field: "dateModified" },
                 ]}
                 setOpenPopup={setOpenPopup}
                 data={employees}
                 setData={setEmployees}
             />
             <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} title="Add Employee">
-                <FormEmployeeSignup handleFormSubmit={handleFormSubmit} />
+                <FormEmployeeSignup handleFormSubmit={handleFormSubmit}/>
             </Popup>
         </div>
     );

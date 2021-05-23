@@ -5,6 +5,7 @@ import Popup from "../../components/customControls/Popup";
 import {useStyles} from "./Employees";
 import FormSupplierSignup from "../signup-page/Forms/FormSupplierSignup";
 import {getAllSuppliers, saveSupplier} from "../../services/users/supplier-service";
+import CustomButton from "../../components/customControls/CustomButton";
 
 function Suppliers(props) {
     const token = useSelector((state) => state.token);
@@ -25,7 +26,8 @@ function Suppliers(props) {
                 await saveSupplier(body)
                     .then(response => {
                         if (response.ok) {
-                            setUpdateTable(true)
+                            setUpdateTable(true);
+                            setOpenPopup(false)
                             alert("Successfully added");
                         } else {
                             alert("Error saving supplier")
@@ -58,11 +60,12 @@ function Suppliers(props) {
                         {title: "DESCRIPTION", field: "description"},
                         {
                             title: "STATUS",
-                            lookup: {false: "Disabled", true: "Active"},
                             field: "isAccountActive",
                             default: "false",
                             editable: false,
-                            defaultGroupOrder: 0,
+                            // defaultGroupOrder: 0,
+                            render: (rowData) => !rowData.isActive ? <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/>
+                                : <CustomButton text={"Active"} style={{backgroundColor: "green"}}/>
                         },
                     ]}
                     setOpenPopup={setOpenPopup}

@@ -5,6 +5,7 @@ import Popup from "../../components/customControls/Popup";
 import {getAllDepartmentHeads, saveDepartmentHead} from "../../services/users/department-heads-service";
 import {useSelector} from "react-redux";
 import FormDepartmentsHeadsSignup from "../signup-page/Forms/FormDepartmentsHeadsSignup";
+import CustomButton from "../../components/customControls/CustomButton";
 
 const DepartmentHeads = () => {
     const classes = useStyles();
@@ -14,7 +15,7 @@ const DepartmentHeads = () => {
     const [updateTable, setUpdateTable] = useState(false);
 
     const fetchData = async (type, body) => {
-        switch (type){
+        switch (type) {
             case "getAllDepartmentHeads":
                 const dh = await getAllDepartmentHeads(token).then(response => response).then(result => result.json());
                 setDepartmentHeads(dh);
@@ -22,9 +23,11 @@ const DepartmentHeads = () => {
             case "saveDepartmentHead":
                 await saveDepartmentHead(body).then(response => {
                     if (response.ok) {
+                        setUpdateTable(true);
+                        setOpenPopup(false);
                         alert("Department Head Saved Successfully");
-                        setUpdateTable(true)
                     } else {
+                        setOpenPopup(false);
                         alert("Failed to save the Department Head");
                     }
                 }).then().catch(error => console.log(error))
@@ -34,7 +37,7 @@ const DepartmentHeads = () => {
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchData("getAllDepartmentHeads").then();
     }, [updateTable])
 
@@ -46,23 +49,32 @@ const DepartmentHeads = () => {
     // console.log(departmentHeads)
 
     return (
-      <div className={classes.spacingStyle}>
-        <CustomMaterialTable
-          title="Department Heads"
-          columns={[
-              {title: "Employment Id", field: "empId"},
-              {title: "Department Id", field: "departmentId"},
-              {title: "Email", field: "email"},
-              {title: "Full Name", field: "name"},
-              {title: "Status", field: "active", lookup:{true: "active", false: "deactivated"}}
-          ]}
-          data={departmentHeads}
-          setOpenPopup={setOpenPopup}
-        />
-        <Popup title={"Add Department Head"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
-            <FormDepartmentsHeadsSignup handleFormSubmit={handleFormSubmit}/>
-        </Popup>
-      </div>
+        <div className={classes.spacingStyle}>
+            <CustomMaterialTable
+                title="Department Heads"
+                columns={[
+                    {title: "Employment Id", field: "empId"},
+                    {title: "Department Id", field: "departmentId"},
+                    {title: "Email", field: "email"},
+                    {title: "Full Name", field: "name"},
+                    {
+                        title: "Status", field: "active", render: (rowData) => {
+                            if (!rowData.isActive) {
+                                return <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/>
+                            } else {
+                                return <CustomButton text={"Active"} style={{backgroundColor: "green"}}/>
+                            }
+                        }
+                    },
+
+                ]}
+                data={departmentHeads}
+                setOpenPopup={setOpenPopup}
+            />
+            <Popup title={"Add Department Head"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
+                <FormDepartmentsHeadsSignup handleFormSubmit={handleFormSubmit}/>
+            </Popup>
+        </div>
     );
 }
 

@@ -8,6 +8,7 @@ import {useSelector} from "react-redux";
 import {IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import {openNewWindow} from "./PurchaseRequisitions";
 
 const RequestsForInformation = () => {
     const [openPopup, setOpenPopup] = useState(false)
@@ -27,9 +28,11 @@ const RequestsForInformation = () => {
                 await saveRFI(body, token)
                     .then(response => {
                         if(response.ok){
-                            alert("Request For information added successfully");
                             setUpdateTable(true);
+                            setOpenPopup(false)
+                            alert("Request For information added successfully");
                         } else{
+                            setOpenPopup(false);
                             alert("Error adding Request For information")
                         }
                     })
@@ -62,7 +65,7 @@ const RequestsForInformation = () => {
                     {
                         title: "Request for Information Document", field: "rfiUrl", render: (rowData) => {
                             return <div>
-                                <IconButton><ImportContactsIcon/></IconButton>
+                                <IconButton onClick={()=> openNewWindow(rowData.rfiUrl)}><ImportContactsIcon/></IconButton>
                                 <IconButton><GetAppIcon/></IconButton>
                             </div>
                         }
