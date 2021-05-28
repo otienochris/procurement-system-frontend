@@ -3,7 +3,7 @@ import CustomMaterialTable from "../../components/customControls/CustomMaterialT
 import Popup from "../../components/customControls/Popup";
 import {useStyles} from "./Employees";
 import FormPurchaseOrder from "./FormPurchaseOrder";
-import {getAllPO, savePO} from "../../services/purchase-order-service";
+import {deletePO, getAllPO, savePO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
 import ImportContactsIcon from '@material-ui/icons/ImportContacts';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -40,7 +40,18 @@ const PurchaseOrders = () => {
                     toast.info("Oops! Could not connect to the server", toastOptions)
                 })
                 setUpdateTable(false)
-                break
+                break;
+            case "delete":
+                await deletePO(token, body)
+                    .then(response => {
+                        setUpdateTable(true)
+                        return response.ok
+                            ? toast.success("Successfully deleted the item", {position: "bottom-right"})
+                            : toast.error("Error deleting purchase order")
+                    })
+                    .then()
+                    .catch(reason => toast.info("Oops! Could not connect to the server"));
+                break;
             default:
                 break
         }
@@ -51,6 +62,8 @@ const PurchaseOrders = () => {
         formData.append("rfpTemplate", data.rfpTemplate[0]);
         formData.append("rfiTemplate", data.rfiTemplate[0]);
         formData.append("purchaseRequisitionId", data.purchaseRequisitionId);
+        formData.append("description", data.description);
+        console.log(data)
         fetchData("savePO", formData).then()
     };
 
@@ -66,12 +79,34 @@ const PurchaseOrders = () => {
                     {title: "Serial No", field: "id"},
                     {title: "Purchase Requisition Id", field: "purchaseRequisitionId"},
                     {
+                        title: "description",
+                        field: "description",
+                        render: rowData => rowData.description ? rowData.description : "Empty"
+                    },
+                    {
+                        title: "Status", field: "status", render: (rowData) => {
+                            if (rowData.status === "PENDING" || rowData === "PENDING") {
+                                return <CustomButton color={"default"} text={rowData.status || rowData}/>
+                            } else if (rowData.status === "CANCEllED" || rowData === "CANCEllED") {
+                                return <CustomButton text={rowData.status || rowData} style={{backgroundColor: "red"}}/>
+                            } else if (rowData.status === "APPROVED" || rowData === "APPROVED") {
+                                return <CustomButton text={rowData.status || rowData}
+                                                     style={{backgroundColor: "green"}}/>
+                            }
+                        }
+                    },
+                    {
+                        title: "Date Created",
+                        field: "dataCreated",
+                        render: (rowData => new Date(rowData.dataCreated).toDateString())
+                    },
+                    {
                         title: "RFI Document", field: "rfiTemplateDownloadUrl", render: (rowData) => {
                             return <div>
-                                <IconButton onClick={()=> openNewWindow(rowData.rfiTemplateDownloadUrl)}>
+                                <IconButton onClick={() => openNewWindow(rowData.rfiTemplateDownloadUrl)}>
                                     <ImportContactsIcon/>
                                 </IconButton>
-                                <IconButton onClick={()=> openNewWindow(rowData.rfiTemplateDownloadUrl)}>
+                                <IconButton onClick={() => openNewWindow(rowData.rfiTemplateDownloadUrl)}>
                                     <GetAppIcon/>
                                 </IconButton>
                             </div>
@@ -80,31 +115,20 @@ const PurchaseOrders = () => {
                     {
                         title: "RFP Document", field: "rfpTemplateDownloadUrl", render: (rowData) => {
                             return <div>
-                                <IconButton onClick={()=> openNewWindow(rowData.rfpTemplateDownloadUrl)}>
+                                <IconButton onClick={() => openNewWindow(rowData.rfpTemplateDownloadUrl)}>
                                     <ImportContactsIcon/>
                                 </IconButton>
-                                <IconButton onClick={()=> openNewWindow(rowData.rfpTemplateDownloadUrl)}>
+                                <IconButton onClick={() => openNewWindow(rowData.rfpTemplateDownloadUrl)}>
                                     <GetAppIcon/>
                                 </IconButton>
                             </div>
                         }
                     },
-                    {
-                        title: "Status", field: "status", defaultGroupOrder: 0, render: (rowData) => {
-                            console.log(rowData)
-                            if (rowData.status === "PENDING" || rowData === "PENDING") {
-                                return <CustomButton color={"default"} text={rowData.status || rowData}/>
-                            } else if (rowData.status === "CANCEllED" || rowData ===  "CANCEllED") {
-                                return <CustomButton text={rowData.status || rowData} style={{backgroundColor: "red"}}/>
-                            } else if (rowData.status === "APPROVED" || rowData === "APPROVED") {
-                                return <CustomButton text={rowData.status || rowData} style={{backgroundColor: "green"}}/>
-                            }
-                        }
-                    },
-                    {title: "Date Created", field: "dataCreated"}
+
                 ]}
                 data={purchaseOrders}
                 setOpenPopup={setOpenPopup}
+                handleDelete={fetchData}
             />
             <Popup title="Add Purchase Order" openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormPurchaseOrder handleFormSubmit={handleFormSubmit}/>

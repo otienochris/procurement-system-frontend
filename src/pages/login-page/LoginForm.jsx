@@ -33,6 +33,7 @@ function LoginForm({
     const dispatch = useDispatch();
 
     const fetchData = async (inputData) => {
+        // toast.info(authenticationUrl);
         setIsLoading(true);
         try {
             const response = await fetch(
@@ -53,12 +54,9 @@ function LoginForm({
                     toast.error("Error logging you in. Please recheck your credentials and try again", options)
                 }
             }
-            if (result.message === "User is disabled") {
-                setIsUserDisabled(true);
-                toast.info("User is Disabled. Please check your mail and use the code sent to active your account", options);
-            }
-        } catch (errors) {
+        } catch (err) {
             toast.error("Error connecting to the server", options);
+            // toast.error(err, options);
             setIsLoading(false);
         }
     };

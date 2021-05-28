@@ -13,3 +13,6 @@ export const getAllRFIs = async (token) => {
 export const saveRFI = async (body, token) => {
     return await fetch( RFIDomainUrl + "/", requestHeaderWithBodyAfterAuthentication("POST", body, token))
 }
+export const deleteRFI = async (token, id) => {
+    return await fetch(RFIDomainUrl + "/delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", null, token))
+}

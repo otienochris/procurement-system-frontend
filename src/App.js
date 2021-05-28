@@ -34,6 +34,7 @@ function App() {
   return (
     <>
       <CssBaseline />
+
       <Router>
         <NavBar />
         <main className={classes.appStyle}>

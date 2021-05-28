@@ -3,7 +3,11 @@ import CustomMaterialTable from '../../components/customControls/CustomMaterialT
 import {useStyles} from "./Employees";
 import Popup from "../../components/customControls/Popup";
 import FormPurchaseRequisition from "./FormPurchaseRequisition";
-import {getAllPurchaseRequisitions, savePurchaseRequisition} from "../../services/purchase-requisition-service";
+import {
+    deletePurchaseRequisition,
+    getAllPurchaseRequisitions,
+    savePurchaseRequisition
+} from "../../services/purchase-requisition-service";
 import {useSelector} from "react-redux";
 import {IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
@@ -43,7 +47,15 @@ function PurchaseRequisitions() {
                 }).then().catch(reason => {
                     toast.info("Oops! Could not connect to the server", toastOptions)
                 })
-                break
+                break;
+            case "delete":
+                await deletePurchaseRequisition(token, body).then(response => {
+                    response.ok
+                        ? toast.success("Item successfully deleted", {position: "bottom-right"})
+                        : toast.error("Error deleting the item", {position: "bottom-right"})
+                }).then().catch(reason => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
+                setUpdateTable(true)
+                break;
             default:
                 break
         }
@@ -64,6 +76,7 @@ function PurchaseRequisitions() {
 
     useEffect(() => {
         fetchData("getAllPurchaseRequisitions").then()
+        setUpdateTable(false)
     }, [updateTable])
 
 
@@ -75,38 +88,44 @@ function PurchaseRequisitions() {
                 columns={[
                     {title: "Serial Number", field: "id"},
                     {title: "Description", field: "description"},
+                    {title: "department", field: "departmentId"},
+                    {title: "Date Created", field: "dateCreated", render:rowData => new Date(rowData.dateCreated).toDateString()},
                     {
-                        title: "Need Document", field: "needDocumentUrl", render: (rowData) => {
-                            return <div className={classes.fileButtons}>
-                                <IconButton
+                        title: "Need Doc", field: "needDocumentUrl",render: (rowData) => {
+                            return <div >
+                                <IconButton size={"small"}
                                     onClick={() => openNewWindow(rowData.needDocumentUrl)}
                                 ><ImportContactsIcon/></IconButton>
-                                <IconButton
+                                <IconButton size={"small"}
                                     onClick={() => openNewWindow(rowData.needDocumentUrl)}
                                 ><GetAppIcon/></IconButton>
                             </div>
                         }
                     },
                     {
-                        title: "Analysis Document", field: "analysisDocumentUrl", render: (rowData) => {
+                        title: "Analysis Doc", field: "analysisDocumentUrl", render: (rowData) => {
                             console.log(rowData);
-                            return <div className={classes.fileButtons}>
-                                <IconButton
+                            return <div >
+                                <IconButton size={"small"}
                                 onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
                                 >
                                     <ImportContactsIcon/>
                                 </IconButton>
-                                <IconButton
+                                <IconButton size={"small"}
                                     onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
                                 ><GetAppIcon/></IconButton>
                             </div>
                         }
                     },
                     {
-                        title: "Emergency Document", field: "emergencyDocumentUrl", render: (rowData) => {
-                            return <div className={classes.fileButtons}>
-                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)}><ImportContactsIcon/></IconButton>
-                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)}><GetAppIcon/></IconButton>
+                        title: "Emergency Doc", field: "emergencyDocumentUrl", render: (rowData) => {
+                            return <div >
+                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
+                                    <GetAppIcon/>
+                                </IconButton>
                             </div>
                         }
                     },
@@ -114,6 +133,7 @@ function PurchaseRequisitions() {
                 ]}
                 data={purchaseRequisitions}
                 setOpenPopup={setOpenPopup}
+                handleDelete={fetchData}
             />
             <Popup title={"Add Purchase Requisition"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormPurchaseRequisition handleFormSubmit={handleFormSubmit}/>

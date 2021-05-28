@@ -9,11 +9,13 @@ import {getAllPurchaseRequisitions} from "../../services/purchase-requisition-se
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
+import CustomTextField from "../../components/customControls/CustomTextField";
 
 const schema = yup.object().shape({
     rfpTemplate: yup.mixed().required("The field is required"),
     rfiTemplate: yup.mixed().required("The field is required"),
     purchaseRequisitionId: yup.string().required("Purchase Requisition is required"),
+    description: yup.string().required("Description is required")
 });
 
 
@@ -45,7 +47,7 @@ const FormPurchaseOrder = (props) => {
             .then(response => response.json())
             .catch(errors => {
                 setIsLoading(false);
-                toast.info("Oop! Could not connect to the server", toastOptions);
+                toast.info("Oops! Could not connect to the server", toastOptions);
             });
 
         setPurchaseRequisitions(pr);
@@ -71,6 +73,14 @@ const FormPurchaseOrder = (props) => {
                 </Select>
                 <FormHelperText>{errors.purchaseRequisitionId?.message}</FormHelperText>
             </FormControl>
+            <CustomTextField
+                label="Description"
+                placeholder="Provide a brief description of the items, urgency and apparent need"
+                fullWidth
+                multiline
+                {...register("description")}
+                inputError={errors.description}
+            />
             <FormControl fullWidth={true}>
                 <h6>Request for Quotation</h6>
                 <input

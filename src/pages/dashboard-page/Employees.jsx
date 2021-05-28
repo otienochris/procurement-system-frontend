@@ -51,7 +51,7 @@ function Employees() {
                             toast.error("Failed to add employees", toastOptions);
                         }
                     }).then().catch(reason => {
-                        toast.info("Oop! Could not connect to the server", toastOptions)
+                        toast.info("Oops! Could not connect to the server", toastOptions)
                     });
                 break;
             default:

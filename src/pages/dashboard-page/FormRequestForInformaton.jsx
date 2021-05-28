@@ -9,10 +9,12 @@ import {useSelector} from "react-redux";
 import {useStyles} from "../signup-page";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
+import CustomTextField from "../../components/customControls/CustomTextField";
 
 const schema = yup.object().shape({
     purchaseOrderId: yup.string().required("Purchase Order Id is required"),
-    rfi: yup.mixed().required("Please upload a Request For Information file")
+    rfi: yup.mixed().required("Please upload a Request For Information file"),
+    description: yup.string().required("Description is required")
 })
 
 export const fetchPO = async (setIsLoading, setSuccessfulFetch, setPurchaseOrders, token) => {
@@ -21,7 +23,7 @@ export const fetchPO = async (setIsLoading, setSuccessfulFetch, setPurchaseOrder
         .then(resp => resp)
         .then(resp => resp.json())
         .catch(err => {
-            toast.info("Oop! Could not connect to the server", toastOptions)
+            toast.info("Oops! Could not connect to the server", toastOptions)
             setIsLoading(false)
         });
     if (po.length !== 0){
@@ -72,6 +74,14 @@ const FormRequestForInformation = (props) => {
                 </Select>
                 <FormHelperText>{errors.purchaseOrderId?.message}</FormHelperText>
             </FormControl>
+            <CustomTextField
+                label="Description"
+                placeholder="Provide a brief description of the need, emergency and items needed"
+                fullWidth
+                multiline
+                {...register("description")}
+                inputError={errors.description}
+            />
             <FormControl error={!!errors.rfi} variant={"outlined"} fullWidth={true}>
                 <h6>Request For Information Document*</h6>
                 // todo add accept

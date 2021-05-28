@@ -18,3 +18,7 @@ export const getAllPurchaseRequisitions = async (token) => {
         fetch(purchaseRequisitionDomainUrl + "/",
             requestHeaderWithoutBodyAfterAuthentication(token))
 }
+
+export const deletePurchaseRequisition = async (token, id) => {
+    return await fetch(purchaseRequisitionDomainUrl + "/delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", "", token))
+}

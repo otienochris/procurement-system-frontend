@@ -4,7 +4,7 @@ import CustomMaterialTable from "../../components/customControls/CustomMaterialT
 import Popup from "../../components/customControls/Popup";
 import FormRequestForQuotation from "./FormRequestForQuotation";
 import {useSelector} from "react-redux";
-import {getAllRFQs, saveRFQ} from "../../services/request-for-quotation-service";
+import {deleteRFQ, getAllRFQs, saveRFQ} from "../../services/request-for-quotation-service";
 import {IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -41,7 +41,13 @@ function RequestForQuotations() {
                         toast.info("Oops! Could not connect to the server", toastOptions)
                     })
                 setUpdateTable(false);
-                break
+                break;
+            case "delete":
+                await deleteRFQ(token, body).then(response => {
+                    setUpdateTable(true);
+                    return response.ok ? toast.success("Item successfully deleted", {position: "bottom-right"})
+                        : toast.error("Error deleting the item", {position: "bottom-right"})
+                }).then().catch(reason => toast.info("Oops! Could not connec to the server"))
             default:
                 break;
         }
@@ -68,6 +74,7 @@ function RequestForQuotations() {
                     {title: "Serial Number", field: "id"},
                     {title: "Purchase Order Id", field: "purchaseOrderId"},
                     {title: "Description", field: "description"},
+                    {title: "Date Created", field: "dateCreated", render: rowData => new Date(rowData.dateCreated).toDateString()},
                     {
                         title: "Quotation Document", field: "quotationDownloadUrl", render: (rowData) => {
                             return <div>
@@ -91,11 +98,11 @@ function RequestForQuotations() {
                                 </IconButton>
                             </div>
                         }
-                    },
-                    {title: "Date Created", field: "dateCreated"}
+                    }
                 ]}
                 data={requestsForQuotation}
                 setOpenPopup={setOpenPopup}
+                handleDelete={fetchData}
             />
             <Popup title={"Add Request for Quotation"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormRequestForQuotation handleFormSubmit={handleFormSubmit} />

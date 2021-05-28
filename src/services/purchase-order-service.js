@@ -8,7 +8,7 @@ const purchaseOrderDomainUrl = apiDomain + "/purchase-orders";
 
 export const savePO = async (token, body) => {
     return await fetch(purchaseOrderDomainUrl + "/",
-            requestHeaderWithBodyAfterAuthentication("POST", body, token))
+        requestHeaderWithBodyAfterAuthentication("POST", body, token))
 }
 
 // fet all purchase orders
@@ -24,6 +24,9 @@ export const getAllPO = async (token) => {
 
 
 // delete purchase order
-
+export const deletePO = async (token, id) => {
+    return await fetch(purchaseOrderDomainUrl + "/delete/" + id,
+        requestHeaderWithBodyAfterAuthentication("DELETE", null, token))
+}
 
 // update purchase order

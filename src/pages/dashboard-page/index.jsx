@@ -4,6 +4,8 @@ import MenuOpenIcon from "@material-ui/icons/MenuOpen";
 import FolderIcon from "@material-ui/icons/Folder";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import PeopleIcon from "@material-ui/icons/People";
+import WebIcon from '@material-ui/icons/Web';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import Users from "./Users";
 import {
     employeesDomainUrl,
@@ -13,6 +15,7 @@ import {
 import {useSelector} from "react-redux";
 import Purchases from "./Purchases";
 import Requests from "./Requests";
+import SolicitationManagement from "./SolicitationManagement";
 
 const useStylesIndex = makeStyles((theme) => ({
     navigationArea: {
@@ -42,7 +45,7 @@ const useStylesIndex = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     backgroundStyle: {
-        backgroundColor: "green",
+        // backgroundColor: "green",
     },
 }));
 
@@ -82,18 +85,6 @@ function Index() {
             console.log(error);
         }
     };
-    const fetchDepartmentHeads = async (url) => {
-        try {
-            const response = await fetch(
-                url,
-                requestHeaderWithoutBodyAfterAuthentication(token)
-            );
-            const result = await response.json();
-            setDepartmentHeads(result);
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     useEffect(() => {
         fetchEmployees(employeesDomainUrl);
@@ -128,16 +119,33 @@ function Index() {
                     <IconButton
                         className={classes.otherIconStyle}
                         onClick={() => handleClick(2)}
+                        title="Order Management"
+                    >
+                        <WebIcon/>
+                    </IconButton>
+
+                    <IconButton
+                        className={classes.otherIconStyle}
+                        onClick={() => handleClick(3)}
+                        title="Reports"
+                    >
+                        <AssessmentIcon/>
+                    </IconButton>
+                    <IconButton
+                        className={classes.otherIconStyle}
+                        onClick={() => handleClick(4)}
                         title="Users"
                     >
                         <PeopleIcon/>
                     </IconButton>
+
                 </Toolbar>
             </Grid>
             <Grid item xs={10} sm={11} className={classes.backgroundStyle}>
                 {selectedTab === 0 && <Purchases/>}
                 {selectedTab === 1 && <Requests/>}
-                {selectedTab === 2 && (
+                {selectedTab === 2 && <SolicitationManagement/>}
+                {selectedTab === 4 && (
                     <Users
                         employees={employees}
                         setEmployees={setEmployees}

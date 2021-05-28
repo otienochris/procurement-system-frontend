@@ -33,7 +33,7 @@ const DepartmentHeads = () => {
                         toast.error("Failed to save the Department Head", toastOptions)
                     }
                 }).then().catch(error => {
-                    toast.info("Oop! Could not connect to the server", toastOptions)
+                    toast.info("Oops! Could not connect to the server", toastOptions)
                 })
                 break;
             default:
