@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
 import {useSelector} from "react-redux";
-import FormSolicitation from "./FormSolicitation";
+import FormSolicitation from "./forms/FormSolicitation";
 import Popup from "../../components/customControls/Popup";
 import {toast} from "react-toastify";
 import {addSolicitation, deleteSolicitation, getAllSolicitations} from "../../services/solicitation";

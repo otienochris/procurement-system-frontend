@@ -35,7 +35,12 @@ const CustomMaterialTable = (props) => {
                     icon: "delete",
                     tooltip: "delete",
                     onClick: (event, rowData) => {
-                        handleDelete("delete", rowData.id)
+                        if (rowData.id !== undefined){
+                            handleDelete("delete", rowData.id);
+                        }
+                        if (rowData.kra !== undefined){
+                            handleDelete("delete", rowData.kra);
+                        }
                     }
                 }
             ]}

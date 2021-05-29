@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {useStyles} from "./Employees";
 import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
 import Popup from "../../components/customControls/Popup";
-import FormRequestForQuotation from "./FormRequestForQuotation";
+import FormRequestForQuotation from "./forms/FormRequestForQuotation";
 import {useSelector} from "react-redux";
 import {deleteRFQ, getAllRFQs, saveRFQ} from "../../services/request-for-quotation-service";
 import {IconButton} from "@material-ui/core";

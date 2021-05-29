@@ -3,9 +3,9 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup"
 import {CircularProgress, FormControl, FormHelperText, InputLabel, Select, TextField} from "@material-ui/core";
-import CustomButton from "../../components/customControls/CustomButton";
+import CustomButton from "../../../components/customControls/CustomButton";
 import {useSelector} from "react-redux";
-import {useStyles} from "../signup-page";
+import {useStyles} from "../../signup-page";
 import {fetchPO} from "./FormRequestForInformaton";
 
 const schema = yup.object().shape({

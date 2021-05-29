@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import CustomMaterialTable from '../../components/customControls/CustomMaterialTable';
 import {useStyles} from "./Employees";
 import Popup from "../../components/customControls/Popup";
-import FormPurchaseRequisition from "./FormPurchaseRequisition";
+import FormPurchaseRequisition from "./forms/FormPurchaseRequisition";
 import {
     deletePurchaseRequisition,
     getAllPurchaseRequisitions,

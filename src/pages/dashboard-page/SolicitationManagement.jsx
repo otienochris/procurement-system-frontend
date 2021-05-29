@@ -6,7 +6,7 @@ import {useStyles} from "./Users";
 import OrderManagement from "./OrderManagement";
 import Contracts from "./Contracts";
 import Solicitations from "./Solicitations";
-import {fetchPO} from "./FormRequestForInformaton";
+import {fetchPO} from "./forms/FormRequestForInformaton";
 
 const SolicitationManagement = () => {
 

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
 import Popup from "../../components/customControls/Popup";
 import {useStyles} from "./Employees";
-import FormPurchaseOrder from "./FormPurchaseOrder";
+import FormPurchaseOrder from "./forms/FormPurchaseOrder";
 import {deletePO, getAllPO, savePO} from "../../services/purchase-order-service";
 import {useSelector} from "react-redux";
 import ImportContactsIcon from '@material-ui/icons/ImportContacts';

@@ -2,14 +2,14 @@ import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
-import CustomButton from "../../components/customControls/CustomButton";
+import CustomButton from "../../../components/customControls/CustomButton";
 import {CircularProgress, FormControl, FormHelperText, InputLabel, Select} from "@material-ui/core";
-import {useStyles} from "../signup-page";
-import {getAllPurchaseRequisitions} from "../../services/purchase-requisition-service";
+import {useStyles} from "../../signup-page";
+import {getAllPurchaseRequisitions} from "../../../services/purchase-requisition-service";
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {toastOptions} from "../../App";
-import CustomTextField from "../../components/customControls/CustomTextField";
+import {toastOptions} from "../../../App";
+import CustomTextField from "../../../components/customControls/CustomTextField";
 
 const schema = yup.object().shape({
     rfpTemplate: yup.mixed().required("The field is required"),
