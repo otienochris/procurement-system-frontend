@@ -44,7 +44,9 @@ const PurchaseOrders = () => {
             case "delete":
                 await deletePO(token, body)
                     .then(response => {
-                        setUpdateTable(true)
+                        if (response.ok){
+                            setUpdateTable(!updateTable);
+                        }
                         return response.ok
                             ? toast.success("Successfully deleted the item", {position: "bottom-right"})
                             : toast.error("Error deleting purchase order")
@@ -59,11 +61,14 @@ const PurchaseOrders = () => {
 
     const handleFormSubmit = (data) => {
         const formData = new FormData();
+        console.log(data);
         formData.append("rfpTemplate", data.rfpTemplate[0]);
         formData.append("rfiTemplate", data.rfiTemplate[0]);
+        formData.append("termsAndConditions", data.termsAndConditions[0]);
         formData.append("purchaseRequisitionId", data.purchaseRequisitionId);
         formData.append("description", data.description);
-        console.log(data)
+
+        console.log(formData.get("termsAndConditions"));
         fetchData("savePO", formData).then()
     };
 
@@ -124,6 +129,18 @@ const PurchaseOrders = () => {
                             </div>
                         }
                     },
+                    {
+                        title: "T&C Document", field: "termsAndConditions", render: (rowData) => {
+                            return <div>
+                                <IconButton onClick={() => openNewWindow(rowData.termsAndConditions)}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={() => openNewWindow(rowData.termsAndConditions)}>
+                                    <GetAppIcon/>
+                                </IconButton>
+                            </div>
+                        }
+                    }
 
                 ]}
                 data={purchaseOrders}

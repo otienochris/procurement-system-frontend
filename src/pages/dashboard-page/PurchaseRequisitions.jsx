@@ -36,14 +36,13 @@ function PurchaseRequisitions() {
             case "savePurchaseRequisition":
                 await savePurchaseRequisition(token, body).then(resp => {
                     if (resp.ok) {
-                        setUpdateTable(true);
+                        setUpdateTable(!updateTable);
                         setOpenPopup(false);
                         toast.success("Purchase Requisition added successfully", toastOptions);
                     } else {
                         setOpenPopup(false);
                         toast.error("error adding purchase requisition", toastOptions);
                     }
-                    setUpdateTable(false)
                 }).then().catch(reason => {
                     toast.info("Oops! Could not connect to the server", toastOptions)
                 })

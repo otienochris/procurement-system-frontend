@@ -9,11 +9,12 @@ import * as yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {getAllSuppliers} from "../../../services/users/supplier-service";
 import CustomButton from "../../../components/customControls/CustomButton";
+import {getAllPO} from "../../../services/purchase-order-service";
 
 const schema = yup.object().shape({
     supplierId: yup.string().required(),
-    status: yup.string().required(),
-    contractDocument: yup.mixed().required()
+    contractDocument: yup.mixed().required(),
+    purchaseOrderId: yup.string().required()
 })
 
 const FormAddContract = (props) => {
@@ -22,6 +23,7 @@ const FormAddContract = (props) => {
     const [isLoading, setIsLoading] = useState(false);
     const [successfulFetch, setSuccessfulFetch] = useState(false);
     const [suppliers, setSuppliers] = useState([{}]);
+    const [purchaseOrders, setPurchaseOrders] = useState([]);
 
     const {handleSubmit, control, register, formState: {errors}} = useForm({
         mode: "onChange",
@@ -31,23 +33,27 @@ const FormAddContract = (props) => {
     const classes = useStyles();
 
     const fetchData = async () => {
-        let supps = [];
-        supps = await getAllSuppliers(token)
-            .then(response => {
-                return response
-            })
+        setIsLoading(true);
+        let suppliersDB = [];
+        let purchaseOrdersDB = []
+        suppliersDB = await getAllSuppliers(token)
+            .then(response => response)
             .then(result => result.json())
             .catch();
-        setSuppliers(supps);
-        if (supps !== 0) {
-            setSuccessfulFetch(true)
+        purchaseOrdersDB = await getAllPO(token)
+            .then(response => response)
+            .then(result => result.json())
+            .catch();
+        setSuppliers(suppliersDB);
+        setPurchaseOrders(purchaseOrdersDB);
+        if (suppliersDB.length !== 0 && purchaseOrdersDB.length !== 0) {
+            setSuccessfulFetch(true);
         }
+        setIsLoading(false);
     }
 
     useEffect(() => {
-        setIsLoading(true)
         fetchData().then();
-        setIsLoading(false);
     }, []);
 
     return (
@@ -67,6 +73,24 @@ const FormAddContract = (props) => {
                             supplier =>
                                 <option key={supplier.kra} value={supplier.kra}>
                                     {supplier.name}
+                                </option>
+                        )}
+                    </Select>
+                    <FormHelperText>{errors.supplierId?.message}</FormHelperText>
+                </FormControl>
+                <FormControl error={!!errors.purchaseOrderId} fullWidth={true}>
+                    <InputLabel>Purchase Order</InputLabel>
+                    <Select
+                        native={true}
+                        variant={"outlined"}
+                        {...register("purchaseOrderId")}
+                        error={!!errors.purchaseOrderId}
+                    >
+                        <option value={""}>{}</option>
+                        {purchaseOrders.map(
+                            purchaseOrder =>
+                                <option key={purchaseOrder.id} value={purchaseOrder.id}>
+                                    {purchaseOrder.id}
                                 </option>
                         )}
                     </Select>
@@ -100,21 +124,10 @@ const FormAddContract = (props) => {
                     />
                     <FormHelperText>{errors.contractDocument?.message}</FormHelperText>
                 </FormControl>
-                <FormControl fullWidth>
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                        native
-                        {...register("status")}
-                    >
-                        <option value={""}>Choose...</option>
-                        <option value={"IN_PROGRESS"}>In progress</option>
-                        <option value={"CANCELLED"} >Cancelled</option>
-                        <option value={"COMPLETED"}>completed</option>
-                    </Select>
-                </FormControl>
+
                 <CustomButton type={"submit"} text={"Submit"} />
             </form>
-            : <h5>Error finding suppliers</h5>
+            : <h5>Error finding either free suppliers or open purchase order</h5>
     )
 }
 

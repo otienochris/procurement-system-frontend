@@ -14,6 +14,7 @@ import CustomTextField from "../../../components/customControls/CustomTextField"
 const schema = yup.object().shape({
     rfpTemplate: yup.mixed().required("The field is required"),
     rfiTemplate: yup.mixed().required("The field is required"),
+    termsAndConditions: yup.mixed().required("This field is required"),
     purchaseRequisitionId: yup.string().required("Purchase Requisition is required"),
     description: yup.string().required("Description is required")
 });
@@ -41,11 +42,9 @@ const FormPurchaseOrder = (props) => {
     const fetchData = async () => {
         setIsLoading(true)
         const pr = await getAllPurchaseRequisitions(token)
-            .then(response => {
-                return response;
-            })
+            .then(response => response)
             .then(response => response.json())
-            .catch(errors => {
+            .catch(() => {
                 setIsLoading(false);
                 toast.info("Oops! Could not connect to the server", toastOptions);
             });
@@ -69,7 +68,7 @@ const FormPurchaseOrder = (props) => {
                 <Select native={true}
                         variant={"outlined"} {...register("purchaseRequisitionId")}>
                     <option value={""}>{}</option>
-                    {purchaseRequisitions.map(item => <option key={item.id} value={item.id}>{item.description.slice(0)}</option>)}
+                    {purchaseRequisitions.map(item => <option key={item.id} value={item.id}>{item.description.slice(0, 20)}</option>)}
                 </Select>
                 <FormHelperText>{errors.purchaseRequisitionId?.message}</FormHelperText>
             </FormControl>
@@ -100,6 +99,16 @@ const FormPurchaseOrder = (props) => {
                     {...register("rfiTemplate")}
                 />
                 <FormHelperText>{errors.rfiTemplate?.message}</FormHelperText>
+            </FormControl>
+            <FormControl error={!!errors.termsAndConditions} fullWidth>
+                <h6>Terms and Conditions</h6>
+                <input
+                    required
+                    type="file"
+                    accept={"application/pdf"}
+                    {...register("termsAndConditions")}
+                />
+                <FormHelperText>{errors.termsAndConditions?.termsAndConditions}</FormHelperText>
             </FormControl>
 
             <CustomButton text="submit" type="submit"/>

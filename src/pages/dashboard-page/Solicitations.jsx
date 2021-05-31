@@ -34,7 +34,7 @@ const Solicitations = () => {
                     })
                     .then()
                     .catch(() => toast.info("Oops! Cannot connect to the server", {}));
-                break
+                break;
             case "delete":
                 await deleteSolicitation(token, body).then(response => {
                     if (response.ok){
@@ -52,7 +52,6 @@ const Solicitations = () => {
 
     useEffect(() => {
         fetchData("getAllSolicitations").then();
-        console.log(solicitations);
     }, [updateTable])
 
     const handleFormSubmit = (data) => {

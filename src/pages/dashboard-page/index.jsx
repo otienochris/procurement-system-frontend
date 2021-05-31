@@ -14,7 +14,7 @@ import {
 } from "../../components/requestHeaders";
 import {useSelector} from "react-redux";
 import Purchases from "./Purchases";
-import Requests from "./Requests";
+import Applications from "./Applications";
 import SolicitationManagement from "./SolicitationManagement";
 
 const useStylesIndex = makeStyles((theme) => ({
@@ -99,7 +99,7 @@ function Index() {
                     <IconButton className={classes.menuIconStyle} title="menu">
                         <MenuOpenIcon fontSize="large"/>
                     </IconButton>
-                    <Divider/>
+                    <Divider variant={"middle"} light/>
 
                     <IconButton
                         className={classes.otherIconStyle}
@@ -111,8 +111,7 @@ function Index() {
                     <IconButton
                         className={classes.otherIconStyle}
                         onClick={() => handleClick(1)}
-                        title="Requests"
-                        dividers
+                        title="Applications"
                     >
                         <FolderIcon/>
                     </IconButton>
@@ -143,7 +142,7 @@ function Index() {
             </Grid>
             <Grid item xs={10} sm={11} className={classes.backgroundStyle}>
                 {selectedTab === 0 && <Purchases/>}
-                {selectedTab === 1 && <Requests/>}
+                {selectedTab === 1 && <Applications/>}
                 {selectedTab === 2 && <SolicitationManagement/>}
                 {selectedTab === 4 && (
                     <Users

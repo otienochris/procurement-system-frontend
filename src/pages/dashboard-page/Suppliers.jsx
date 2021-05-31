@@ -58,17 +58,19 @@ function Suppliers(props) {
                 <CustomMaterialTable
                     title="Suppliers"
                     columns={[
-                        {title: "KRA", field: "kra"},
-                        {title: "NAME", field: "name"},
-                        {title: "DESCRIPTION", field: "description"},
+                        {title: "Kra Pin", field: "kra"},
+                        {title: "Title", field: "name"},
+                        {title: "Email", field: "email"},
+                        {title: "Description", field: "description"},
                         {
-                            title: "STATUS",
+                            title: "Status",
                             field: "isAccountActive",
                             default: "false",
                             editable: false,
                             // defaultGroupOrder: 0,
-                            render: (rowData) => !rowData.isActive ? <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/>
-                                : <CustomButton text={"Active"} style={{backgroundColor: "green"}}/>
+                            render: (rowData) => !rowData.isAccountActive ?
+                                <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/> :
+                                <CustomButton text={"Activated"} style={{backgroundColor: "green"}}/>
                         },
                     ]}
                     setOpenPopup={setOpenPopup}

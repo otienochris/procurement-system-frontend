@@ -3,13 +3,16 @@ import {CircularProgress, FormControl, FormHelperText, InputLabel, Select} from 
 import {Controller, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {useSelector} from "react-redux";
-import {fetchPO} from "./FormRequestForInformaton";
+// import {fetchPO} from "./FormRequestForInformaton";
 import {useStyles} from "../../signup-page";
 import * as yup from "yup";
 import CustomTextField from "../../../components/customControls/CustomTextField";
 import CustomButton from "../../../components/customControls/CustomButton";
 import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers"
 import DateFnsUtils from "@date-io/date-fns";
+import {getAllPO} from "../../../services/purchase-order-service";
+import {toast} from "react-toastify";
+import {toastOptions} from "../../../App";
 
 
 
@@ -32,8 +35,25 @@ const FormSolicitation = (props) => {
         resolver: yupResolver(schema),
     });
 
+    const fetchData = async ()=> {
+        setIsLoading(true)
+        const apps = await getAllPO(token)
+            .then(response => response)
+            .then(response => response.json())
+            .catch(() => {
+                setIsLoading(false);
+                toast.info("Oops! Could not connect to the server", toastOptions);
+            });
+
+        setPurchaseOrders(apps);
+        if (apps.length !== 0){
+            setSuccessfulFetch(true)
+        }
+        setIsLoading(false)
+    }
+
     useEffect(() => {
-        fetchPO(setIsLoading, setSuccessfulFetch, setPurchaseOrders, token).then();
+        fetchData().then();
     }, []);
 
 
