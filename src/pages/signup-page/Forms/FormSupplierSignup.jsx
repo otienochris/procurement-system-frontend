@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import * as yup from "yup"
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -32,12 +32,14 @@ const schema = yup.object().shape({
 
 const FormSupplierSignup = (props) => {
     const classes = useStyles()
-    const {handleFormSubmit} = props;
+    const {handleFormSubmit, defaultValues} = props;
     const {register, handleSubmit, formState: {errors}} = useForm({
         mode: "onChange",
         criteriaMode: "all",
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schema),
+        defaultValues: defaultValues
     })
+
     return (
         <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea} >
             <CustomTextField

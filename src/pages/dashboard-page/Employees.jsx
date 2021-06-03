@@ -3,11 +3,12 @@ import React, {useEffect, useState} from "react";
 import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
 import Popup from "../../components/customControls/Popup";
 import FormEmployeeSignup from "../signup-page/Forms/FormEmployeeSignup";
-import {getAllEmployees, saveEmployee} from "../../services/users/employee-service";
+import {deleteEmployee, getAllEmployees, saveEmployee, updateEmployee} from "../../services/users/employee-service";
 import {useSelector} from "react-redux";
 import CustomButton from "../../components/customControls/CustomButton";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
+import FormEditEmployee from "./forms/FormEditEmployee";
 
 export const useStyles = makeStyles((theme) => ({
     spacingStyle: {
@@ -29,21 +30,23 @@ function Employees() {
     const [updateTable, setUpdateTable] = useState(false);
     const token = useSelector(state => state.token);
     const [openPopup, setOpenPopup] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [oldEmployeeData, setOldEmployeeData] = useState({});
 
     const fetchData = async (type, body) => {
         switch (type) {
-            case "getAllEmployees":
+            case "getAll":
                 const employeesFromDb = await getAllEmployees(token)
                     .then(response => response)
                     .then(result => result.json())
                     .catch(error => console.log(error));
                 setEmployees(employeesFromDb)
                 break;
-            case "saveEmployee":
+            case "save":
                 await saveEmployee(body)
                     .then(response => {
                         if (response.ok) {
-                            setUpdateTable(true);
+                            setUpdateTable(!updateTable);
                             setOpenPopup(false);
                             toast.success("Employee added successfully", toastOptions);
                         } else {
@@ -54,25 +57,67 @@ function Employees() {
                         toast.info("Oops! Could not connect to the server", toastOptions)
                     });
                 break;
+            case "delete":
+                let id = body.replaceAll("/", "_");
+                await deleteEmployee(token, id)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            setOpenPopup(false);
+                            toast.success("Employee deleted successfully", toastOptions);
+                        } else {
+                            setOpenPopup(false);
+                            toast.error("Failed to delete employees", toastOptions);
+                        }
+                    })
+                    .then()
+                    .catch(() => toast.info("Oops! Could not connect to the server", toastOptions))
+                break;
+            case "update":
+                // console.log(oldEmployeeData.id);
+                let empId = oldEmployeeData.id.replaceAll("/", "_");
+                // console.log(empId);
+                await updateEmployee(token, empId, body)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            setOpenEdit(false);
+                            toast.success("Employee updated successfully", toastOptions);
+                        } else {
+                            setOpenPopup(false);
+                            toast.error("Failed to update employees", toastOptions);
+                        }
+                    })
+                    .then()
+                    .catch(() => toast.info("Oops! Could not connect to the server", toastOptions))
+                break;
             default:
                 break;
         }
     }
 
     useEffect(() => {
-        fetchData("getAllEmployees").then()
+        fetchData("getAll").then()
     }, [updateTable])
 
     const handleFormSubmit = (data) => {
         delete data.password2;
-        fetchData("saveEmployee", data).then()
+        fetchData("save", data).then();
+
+    }
+    const handleEdit = (oldData) => {
+        setOldEmployeeData(oldData);
+        console.log(oldData);
+    }
+    const handleEditSubmit = (data) => {
+        fetchData("update", data).then();
     }
     return (
         <div className={classes.spacingStyle}>
             <CustomMaterialTable
                 title="Employees"
                 columns={[
-                    {title: "Employment Id", field: "employmentId"},
+                    {title: "Employment Id", field: "id"},
                     {title: "Name", field: "name"},
                     {title: "Email", field: "email"},
                     {title: "Position", field: "position"},
@@ -91,28 +136,20 @@ function Employees() {
                     },
                 ]}
                 setOpenPopup={setOpenPopup}
+                setOpenEdit={setOpenEdit}
                 data={employees}
                 setData={setEmployees}
+                handleEdit={handleEdit}
+                handleDelete={fetchData}
             />
             <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} title="Add Employee">
                 <FormEmployeeSignup handleFormSubmit={handleFormSubmit}/>
+            </Popup>
+            <Popup openPopup={openEdit} setOpenPopup={setOpenEdit} title={"Edit Employee"}>
+                <FormEditEmployee handleEdit={handleEditSubmit} defaultValues={oldEmployeeData}/>
             </Popup>
         </div>
     );
 }
 
 export default Employees;
-
-// {
-//   "dataCreated": "2021-05-03T13:20:06.988Z",
-//   "dateModified": "2021-05-03T13:20:06.988Z",
-//   "email": "string",
-//   "employmentId": "string",
-//   "isActive": true,
-//   "name": "string",
-//   "position": "string",
-//   "roles": {
-//     "id": 0,
-//     "role": "ROLE_ADMIN"
-//   }
-// }

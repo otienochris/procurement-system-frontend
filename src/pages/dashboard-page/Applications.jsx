@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react'
 import {IconButton, Paper} from "@material-ui/core";
 import {useStyles} from "./Users";
 import {useSelector} from "react-redux";
-import {deleteRFQ, saveRFQ} from "../../services/request-for-quotation-service";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
 import CustomMaterialTable from "../../components/customControls/CustomMaterialTable";
@@ -44,7 +43,7 @@ const Applications = () => {
                 break;
             case "delete":
                 await deleteApplication(token, body).then(response => {
-                    if (response.ok){
+                    if (response.ok) {
                         setUpdateTable(!updateTable);
                     }
                     return response.ok ? toast.success("Item successfully deleted", {position: "bottom-right"})

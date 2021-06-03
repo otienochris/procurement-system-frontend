@@ -36,16 +36,19 @@ const FormEmployeeSignup = (props) => {
     const {handleFormSubmit} = props;
     const classes = useStyles()
 
+
     const {
         register,
         // reset,
-        formState: { errors },
+        formState: {errors},
         handleSubmit,
+        control
     } = useForm({
         mode: "onChange",
         resolver: yupResolver(schema),
-        criteriaMode: "all",
+        criteriaMode: "all"
     });
+
 
     return (
         <form
@@ -56,25 +59,27 @@ const FormEmployeeSignup = (props) => {
                 label="full name"
                 placeholder="please enter your full name"
                 fullWidth
-                {...register("name")}
                 inputError={errors.name}
+                {...register("name")}
             />
+
+
             <CustomTextField
                 label="Employee Id"
                 placeholder="Please enter your employee id"
                 fullWidth
-                {...register("empId")}
                 inputError={errors.empId}
+                {...register("empId")}
             />
             <FormControl fullWidth>
                 <InputLabel className={classes.inputLabel}>Position</InputLabel>
                 <Select
                     native
                     variant="outlined"
-                    {...register("position")}
                     error={!!errors.position}
+                    {...register("position")}
                 >
-                    <option value=""></option>
+                    <option value="">{}</option>
                     <option value="PROCUREMENT_OFFICER">Procurement officer</option>
                     <option value="INVENTORY_MANAGER">Inventory Manager</option>
                     <option value="FINANCE">Finance</option>
@@ -90,6 +95,7 @@ const FormEmployeeSignup = (props) => {
                     {errors.position?.message}
                 </FormHelperText>
             </FormControl>
+
             <CustomTextField
                 label="email"
                 placeholder="Please enter your email"
@@ -98,6 +104,7 @@ const FormEmployeeSignup = (props) => {
                 {...register("email")}
                 inputError={errors.email}
             />
+
             <CustomTextField
                 label="Password"
                 placeholder="Please insert your password"
@@ -114,7 +121,7 @@ const FormEmployeeSignup = (props) => {
                 {...register("password2")}
                 inputError={errors.password2}
             />
-            <CustomButton text="submit" type="submit" />
+            <CustomButton text="submit" type="submit"/>
         </form>
     );
 }

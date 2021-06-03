@@ -10,7 +10,9 @@ const Popup = (props) => {
       <DialogTitle>
         <div>
           {title}
-          <IconButton onClick={()=> setOpenPopup(false)}>
+          <IconButton onClick={()=> {
+              setOpenPopup(false);
+          }}>
             <CustomButton text="X" />
           </IconButton>
         </div>

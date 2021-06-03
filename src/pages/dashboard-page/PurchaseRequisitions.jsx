@@ -23,7 +23,8 @@ function PurchaseRequisitions() {
     const classes = useStyles();
     const [openPopup, setOpenPopup] = useState(false);
     const token = useSelector(state => state.token);
-    const [purchaseRequisitions, setPurchaseRequisitions] = useState()
+    const [purchaseRequisitions, setPurchaseRequisitions] = useState();
+    const [defaultValues, setDefaultValues] = useState({});
     const [updateTable, setUpdateTable] = useState(false);
 
     const fetchData = async (type, body) => {
@@ -60,11 +61,20 @@ function PurchaseRequisitions() {
         }
     }
 
+    const handleEdit = (rowData) => {
+        delete rowData.acquisitionDocumentUrl;
+        delete rowData.analysisDocumentUrl;
+        delete rowData.emergencyDocumentUrl;
+        delete rowData.needDocumentUrl;
+        delete rowData.dateCreated;
+
+        setDefaultValues({description: rowData.description});
+        console.log(rowData.id)
+    }
+
     const handleFormSubmit = (data) => {
         const formData = new FormData();
-        // if (!(data.acquisitionDocument.length === 0)) {
-        //     formData.append("acquisitionDocument", data.acquisitionDocument[0]);
-        // }
+        formData.append("acquisitionDocument", data.acquisitionDocument[0]);
         formData.append("needDocument", data.needDocument[0]);
         formData.append("analysisDocument", data.analysisDocument[0]);
         formData.append("emergencyDocument", data.emergencyDocument[0]);
@@ -75,9 +85,7 @@ function PurchaseRequisitions() {
 
     useEffect(() => {
         fetchData("getAllPurchaseRequisitions").then()
-        setUpdateTable(false)
     }, [updateTable])
-
 
 
     return (
@@ -88,15 +96,19 @@ function PurchaseRequisitions() {
                     {title: "Serial Number", field: "id"},
                     {title: "Description", field: "description"},
                     {title: "department", field: "departmentId"},
-                    {title: "Date Created", field: "dateCreated", render:rowData => new Date(rowData.dateCreated).toDateString()},
                     {
-                        title: "Need Doc", field: "needDocumentUrl",render: (rowData) => {
-                            return <div >
+                        title: "Date Created",
+                        field: "dateCreated",
+                        render: rowData => new Date(rowData.dateCreated).toDateString()
+                    },
+                    {
+                        title: "Need Doc", field: "needDocumentUrl", render: (rowData) => {
+                            return <div>
                                 <IconButton size={"small"}
-                                    onClick={() => openNewWindow(rowData.needDocumentUrl)}
+                                            onClick={() => openNewWindow(rowData.needDocumentUrl)}
                                 ><ImportContactsIcon/></IconButton>
                                 <IconButton size={"small"}
-                                    onClick={() => openNewWindow(rowData.needDocumentUrl)}
+                                            onClick={() => openNewWindow(rowData.needDocumentUrl)}
                                 ><GetAppIcon/></IconButton>
                             </div>
                         }
@@ -104,21 +116,21 @@ function PurchaseRequisitions() {
                     {
                         title: "Analysis Doc", field: "analysisDocumentUrl", render: (rowData) => {
                             console.log(rowData);
-                            return <div >
+                            return <div>
                                 <IconButton size={"small"}
-                                onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
+                                            onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
                                 >
                                     <ImportContactsIcon/>
                                 </IconButton>
                                 <IconButton size={"small"}
-                                    onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
+                                            onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
                                 ><GetAppIcon/></IconButton>
                             </div>
                         }
                     },
                     {
                         title: "Emergency Doc", field: "emergencyDocumentUrl", render: (rowData) => {
-                            return <div >
+                            return <div>
                                 <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
                                     <ImportContactsIcon/>
                                 </IconButton>
@@ -128,15 +140,31 @@ function PurchaseRequisitions() {
                             </div>
                         }
                     },
+                    {
+                        title: "Acquisition Doc",
+                        field: "emergencyDocumentUrl",
+                        render: (rowData) => {
+                            return (
+                            <div>
+                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
+                                    <ImportContactsIcon/>
+                                </IconButton>
+                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
+                                    <GetAppIcon/>
+                                </IconButton>
+                            </div>
+                            )
+                        }
+                    }
 
                 ]}
                 data={purchaseRequisitions}
                 setOpenPopup={setOpenPopup}
                 handleDelete={fetchData}
+                handleEdit={handleEdit}
             />
             <Popup title={"Add Purchase Requisition"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
-                <FormPurchaseRequisition handleFormSubmit={handleFormSubmit}/>
-                {/*<FormPurchaseRequisitions handleFormSubmit={handleFormSubmit}/>*/}
+                <FormPurchaseRequisition handleFormSubmit={handleFormSubmit} defaultValues={defaultValues}/>
             </Popup>
         </div>
     );

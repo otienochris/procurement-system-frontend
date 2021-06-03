@@ -4,27 +4,30 @@ import CustomMaterialTable from "../../components/customControls/CustomMaterialT
 import Popup from "../../components/customControls/Popup";
 import {useStyles} from "./Employees";
 import FormSupplierSignup from "../signup-page/Forms/FormSupplierSignup";
-import {getAllSuppliers, saveSupplier} from "../../services/users/supplier-service";
+import {deleteSupplier, getAllSuppliers, saveSupplier, updateSupplier} from "../../services/users/supplier-service";
 import CustomButton from "../../components/customControls/CustomButton";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
+import FormEditSupplier from "./forms/FormEditSupplier";
 
 function Suppliers(props) {
     const token = useSelector((state) => state.token);
     const [suppliers, setSuppliers] = useState([])
     const [openPopup, setOpenPopup] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
     const [updateTable, setUpdateTable] = useState(false);
+    const [defaultValues, setDefaultValues] = useState({});
     const classes = useStyles();
 
     const fetchData = async (type, body) => {
         switch (type) {
-            case "getAllSuppliers":
+            case "getAll":
                 const suppliersFromDB = await getAllSuppliers(token)
                     .then(response => response)
                     .then(result => result.json());
                 setSuppliers(suppliersFromDB);
                 break;
-            case "saveSupplier":
+            case "save":
                 await saveSupplier(body)
                     .then(response => {
                         if (response.ok) {
@@ -38,18 +41,55 @@ function Suppliers(props) {
                         toast.info("Oops! Could not connect to the server", toastOptions);
                     });
                 break;
+            case "delete":
+                await deleteSupplier(token, body)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            toast.success("Successfully delete the supplier", {position: "bottom-right"})
+                        } else {
+                            toast.error("Error deleting the supplier", {position: "bottom-right"})
+                        }
+                    })
+                    .then()
+                    .catch(()=> toast.info("Oops! Could not connect to the server", {position: "bottom-right"}))
+                break;
+            case "update":
+                await updateSupplier(token, defaultValues.kra, body)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            setOpenEdit(false);
+                            toast.success("Successfully updated the supplier", {position: "bottom-right"})
+                        } else {
+                            toast.error("Error updating  the supplier", {position: "bottom-right"})
+                        }
+                    })
+                    .then()
+                    .catch(() => {
+                        toast.info("Oops! Could not connec to the server", {position: "bottom-right"})
+                    })
+                break
             default:
                 break;
         }
     }
 
     useEffect(() => {
-        fetchData("getAllSuppliers").then()
+        fetchData("getAll").then()
     }, [updateTable])
 
     const handleFormSubmit = (data) => {
         delete data.password2;
-        fetchData("saveSupplier", data).then();
+        fetchData("save", data).then();
+    }
+
+    const handleEditSubmit = (rowData) => {
+        fetchData("update", rowData).then();
+    }
+
+    const handleEdit = (rowData) => {
+        setDefaultValues(rowData);
     }
 
     return (
@@ -66,7 +106,7 @@ function Suppliers(props) {
                             title: "Status",
                             field: "isAccountActive",
                             default: "false",
-                            editable: false,
+                            // editable: false,
                             // defaultGroupOrder: 0,
                             render: (rowData) => !rowData.isAccountActive ?
                                 <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/> :
@@ -74,12 +114,17 @@ function Suppliers(props) {
                         },
                     ]}
                     setOpenPopup={setOpenPopup}
+                    setOpenEdit={setOpenEdit}
                     data={suppliers}
-                    setData={setSuppliers}
+                    handleEdit={handleEdit}
+                    handleDelete={fetchData}
                 />
             </div>
             <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} title="Add Supplier">
                 <FormSupplierSignup handleFormSubmit={handleFormSubmit}/>
+            </Popup>
+            <Popup title={"Edit supplier details"} openPopup={openEdit} setOpenPopup={setOpenEdit}>
+                <FormEditSupplier handleEditSubmit={handleEditSubmit} defaultValues={defaultValues}/>
             </Popup>
         </>
     );

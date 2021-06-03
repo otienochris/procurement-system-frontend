@@ -55,7 +55,7 @@ export const requestHeaderWithJSONBodyAfterAuthentication = (
   headers: {
     Authorization: "Bearer " + token,
     Accept: "application/json",
-    "Content-Type": "Application/json"
+    "Content-Type": "Application/json",
   },
   body: JSON.stringify(body),
 });

@@ -1,0 +1,1 @@
+export const getAllOrderManagementObjs = async () => await fetch("url");

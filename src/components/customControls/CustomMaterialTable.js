@@ -2,7 +2,7 @@ import MaterialTable from "material-table";
 import React from "react";
 
 const CustomMaterialTable = (props) => {
-    const {columns, title, data, setData, handleDelete, setOpenPopup, ...others} = props
+    const {columns, title, data, handleDelete, setOpenEdit, setOpenPopup, handleEdit, ...others} = props
     return (
         <MaterialTable
             title={title}
@@ -28,7 +28,12 @@ const CustomMaterialTable = (props) => {
                     icon: "edit",
                     tooltip: "Edit row",
                     onClick: (event, rowData) => {
-                        setOpenPopup(true)
+                        if (handleEdit !== undefined){
+                            handleEdit(rowData);
+                        }
+                        if (setOpenEdit !== undefined){
+                            setOpenEdit(true);
+                        }
                     },
                 },
                 {
@@ -40,6 +45,9 @@ const CustomMaterialTable = (props) => {
                         }
                         if (rowData.kra !== undefined){
                             handleDelete("delete", rowData.kra);
+                        }
+                        if (rowData.empId !== undefined){
+                            handleDelete("delete", rowData.empId);
                         }
                     }
                 }
