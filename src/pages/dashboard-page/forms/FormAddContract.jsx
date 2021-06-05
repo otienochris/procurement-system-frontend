@@ -17,6 +17,26 @@ const schema = yup.object().shape({
     purchaseOrderId: yup.string().required()
 })
 
+export const fetchData = async (setSuppliers, setPOs, setIsLoading, setSuccessfulFetch, token) => {
+    setIsLoading(true);
+    let suppliersDB = [];
+    let purchaseOrdersDB = []
+    suppliersDB = await getAllSuppliers(token)
+        .then(response => response)
+        .then(result => result.json())
+        .catch();
+    purchaseOrdersDB = await getAllPO(token)
+        .then(response => response)
+        .then(result => result.json())
+        .catch();
+    setSuppliers(suppliersDB);
+    setPOs(purchaseOrdersDB);
+    if (suppliersDB.length !== 0 && purchaseOrdersDB.length !== 0) {
+        setSuccessfulFetch(true);
+    }
+    setIsLoading(false);
+};
+
 const FormAddContract = (props) => {
     const {handleFormSubmit} = props;
     const token = useSelector(state => state.token);
@@ -32,28 +52,8 @@ const FormAddContract = (props) => {
 
     const classes = useStyles();
 
-    const fetchData = async () => {
-        setIsLoading(true);
-        let suppliersDB = [];
-        let purchaseOrdersDB = []
-        suppliersDB = await getAllSuppliers(token)
-            .then(response => response)
-            .then(result => result.json())
-            .catch();
-        purchaseOrdersDB = await getAllPO(token)
-            .then(response => response)
-            .then(result => result.json())
-            .catch();
-        setSuppliers(suppliersDB);
-        setPurchaseOrders(purchaseOrdersDB);
-        if (suppliersDB.length !== 0 && purchaseOrdersDB.length !== 0) {
-            setSuccessfulFetch(true);
-        }
-        setIsLoading(false);
-    }
-
     useEffect(() => {
-        fetchData().then();
+        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token).then();
     }, []);
 
     return (

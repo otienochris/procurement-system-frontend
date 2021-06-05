@@ -31,7 +31,6 @@ const FormPurchaseOrder = (props) => {
     const classes = useStyles();
     const {
         register,
-        reset,
         handleSubmit,
         formState: {errors},
     } = useForm({

@@ -6,7 +6,8 @@ import FormPurchaseRequisition from "./forms/FormPurchaseRequisition";
 import {
     deletePurchaseRequisition,
     getAllPurchaseRequisitions,
-    savePurchaseRequisition
+    savePurchaseRequisition,
+    updatePurchaseRequisition
 } from "../../services/purchase-requisition-service";
 import {useSelector} from "react-redux";
 import {IconButton} from "@material-ui/core";
@@ -14,6 +15,7 @@ import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
+import FormEditPurchaseRequisition from "./forms/FormEditPurchaseRequisition";
 
 export const openNewWindow = (url) => {
     window.open(url)
@@ -22,6 +24,7 @@ export const openNewWindow = (url) => {
 function PurchaseRequisitions() {
     const classes = useStyles();
     const [openPopup, setOpenPopup] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false)
     const token = useSelector(state => state.token);
     const [purchaseRequisitions, setPurchaseRequisitions] = useState();
     const [defaultValues, setDefaultValues] = useState({});
@@ -29,12 +32,12 @@ function PurchaseRequisitions() {
 
     const fetchData = async (type, body) => {
         switch (type) {
-            case "getAllPurchaseRequisitions":
+            case "getAll":
                 const PR = await getAllPurchaseRequisitions(token).then(resp => resp)
                     .then(result => result.json());
                 setPurchaseRequisitions(PR);
                 break
-            case "savePurchaseRequisition":
+            case "save":
                 await savePurchaseRequisition(token, body).then(resp => {
                     if (resp.ok) {
                         setUpdateTable(!updateTable);
@@ -49,27 +52,57 @@ function PurchaseRequisitions() {
                 })
                 break;
             case "delete":
-                await deletePurchaseRequisition(token, body).then(response => {
-                    response.ok
-                        ? toast.success("Item successfully deleted", {position: "bottom-right"})
-                        : toast.error("Error deleting the item", {position: "bottom-right"})
-                }).then().catch(reason => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
-                setUpdateTable(true)
+                await deletePurchaseRequisition(token, body)
+                    .then(response => {
+                        if (response.ok) {
+                            setUpdateTable(!updateTable);
+                            toast.success("Item successfully deleted", {position: "bottom-right"});
+                        } else {
+                            toast.error("Error deleting the item", {position: "bottom-right"});
+                        }
+                    })
+                    .then()
+                    .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
                 break;
+            case "update":
+                await updatePurchaseRequisition(token, body, defaultValues.id)
+                    .then(response => {
+                            if (response.ok) {
+                                setUpdateTable(!updateTable);
+                                setOpenEdit(false);
+                                toast.success("Item successfully updated", {position: "bottom-right"});
+                            } else {
+                                toast.error("Error updating the item", {position: "bottom-right"});
+                            }
+                        })
+                    .then()
+                    .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
+                break
             default:
                 break
         }
     }
 
     const handleEdit = (rowData) => {
-        delete rowData.acquisitionDocumentUrl;
-        delete rowData.analysisDocumentUrl;
-        delete rowData.emergencyDocumentUrl;
-        delete rowData.needDocumentUrl;
-        delete rowData.dateCreated;
+        setDefaultValues(rowData);
+    }
+    const handleEditSubmit = (newData) => {
+        const formData = new FormData();
+        if (newData.acquisitionDocument.length[0] !== undefined) {
+            formData.append("acquisitionDocument", newData.acquisitionDocument[0]);
+        }
+        if (newData.needDocument[0] !== undefined) {
+            formData.append("needDocument", newData.needDocument[0]);
+        }
+        if (newData.analysisDocument[0] !== undefined) {
+            formData.append("analysisDocument", newData.analysisDocument[0]);
+        }
+        if (newData.emergencyDocument[0] !== undefined) {
+            formData.append("emergencyDocument", newData.emergencyDocument[0]);
+        }
+        formData.append("description", newData.description);
 
-        setDefaultValues({description: rowData.description});
-        console.log(rowData.id)
+        fetchData("update", formData).then()
     }
 
     const handleFormSubmit = (data) => {
@@ -79,12 +112,11 @@ function PurchaseRequisitions() {
         formData.append("analysisDocument", data.analysisDocument[0]);
         formData.append("emergencyDocument", data.emergencyDocument[0]);
         formData.append("description", data.description);
-        fetchData("savePurchaseRequisition", formData).then()
-
+        fetchData("save", formData).then()
     }
 
     useEffect(() => {
-        fetchData("getAllPurchaseRequisitions").then()
+        fetchData("getAll").then()
     }, [updateTable])
 
 
@@ -145,14 +177,16 @@ function PurchaseRequisitions() {
                         field: "emergencyDocumentUrl",
                         render: (rowData) => {
                             return (
-                            <div>
-                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
-                                    <ImportContactsIcon/>
-                                </IconButton>
-                                <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)} size={"small"}>
-                                    <GetAppIcon/>
-                                </IconButton>
-                            </div>
+                                <div>
+                                    <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)}
+                                                size={"small"}>
+                                        <ImportContactsIcon/>
+                                    </IconButton>
+                                    <IconButton onClick={() => openNewWindow(rowData.emergencyDocumentUrl)}
+                                                size={"small"}>
+                                        <GetAppIcon/>
+                                    </IconButton>
+                                </div>
                             )
                         }
                     }
@@ -160,11 +194,15 @@ function PurchaseRequisitions() {
                 ]}
                 data={purchaseRequisitions}
                 setOpenPopup={setOpenPopup}
+                setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
                 handleEdit={handleEdit}
             />
             <Popup title={"Add Purchase Requisition"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormPurchaseRequisition handleFormSubmit={handleFormSubmit} defaultValues={defaultValues}/>
+            </Popup>
+            <Popup title={"Edit Purchase Requisition"} openPopup={openEdit} setOpenPopup={setOpenEdit}>
+                <FormEditPurchaseRequisition handleEditSubmit={handleEditSubmit} defaultValues={defaultValues}/>
             </Popup>
         </div>
     );

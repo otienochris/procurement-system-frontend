@@ -12,9 +12,6 @@ const schema = yup.object().shape({
         .string()
         .min(6, "name must be at least 5 characters")
         .max(50, "name cannot exceed 8 characters"),
-    empId: yup
-        .string()
-        .matches(/^[A-Z]\d{2}\/\d{5}\/\d{2}$/, "enter a valid employment id"),
     email: yup.string().email("enter a valid email"),
     position: yup.string()
 });
@@ -56,24 +53,15 @@ const FormEditEmployee = (props) => {
                 />
 
 
-                <Controller render={({field: {value, onChange}}) => (
-                    <CustomTextField
-                        label="Employee Id"
-                        placeholder="Please enter your employee id"
-                        fullWidth
-                        value={value}
-                        onChange={onChange}
-                        inputError={errors.empId}
-                    />
-                )} name={"empId"} control={control} defaultValue={defaultValues.id}/>
                 <Controller render={({field: {value, onChange}})=>(
                     <FormControl fullWidth>
                         <InputLabel className={classes.inputLabel}>Position</InputLabel>
                         <Select
                             native
                             variant="outlined"
+                            value={value}
+                            onChange={onChange}
                             error={!!errors.position}
-                            defaultValue={defaultValues.position}
                         >
                             <option value="">{}</option>
                             <option value="PROCUREMENT_OFFICER">Procurement officer</option>
@@ -91,7 +79,7 @@ const FormEditEmployee = (props) => {
                             {errors.position?.message}
                         </FormHelperText>
                     </FormControl>
-                )} name={"position"} control={control} />
+                )} name={"position"} control={control} defaultValue={defaultValues.position}/>
 
                 <Controller render={({field: {value, onChange}})=> (
                     <CustomTextField

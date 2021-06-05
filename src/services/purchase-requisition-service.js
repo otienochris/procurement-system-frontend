@@ -5,20 +5,20 @@ import {
 } from "../components/requestHeaders";
 
 
-const purchaseRequisitionDomainUrl = apiDomain + "/purchase-requisitions";
+const purchaseRequisitionDomainUrl = apiDomain + "/purchase-requisitions/";
 
-export const savePurchaseRequisition = async (token, body) => {
-    return await
-        fetch(purchaseRequisitionDomainUrl + "/",
-            requestHeaderWithBodyAfterAuthentication("POST", body, token))
-}
+export const savePurchaseRequisition = async (token, body) =>
+    await
+        fetch(purchaseRequisitionDomainUrl ,requestHeaderWithBodyAfterAuthentication("POST", body, token))
 
-export const getAllPurchaseRequisitions = async (token) => {
-    return await
-        fetch(purchaseRequisitionDomainUrl + "/",
+
+export const getAllPurchaseRequisitions = async (token) =>
+    await
+        fetch(purchaseRequisitionDomainUrl,
             requestHeaderWithoutBodyAfterAuthentication(token))
-}
 
-export const deletePurchaseRequisition = async (token, id) => {
-    return await fetch(purchaseRequisitionDomainUrl + "/delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", "", token))
-}
+export const deletePurchaseRequisition = async (token, id) =>
+    await fetch(purchaseRequisitionDomainUrl + "delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", "", token))
+
+export const updatePurchaseRequisition = async (token, body, id) =>
+    await fetch(purchaseRequisitionDomainUrl + "update/" + id, requestHeaderWithBodyAfterAuthentication("PUT", body, token))

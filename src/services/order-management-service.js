@@ -1,6 +1,6 @@
 import {
     apiDomain,
-    requestHeaderWithBodyAfterAuthentication,
+    requestHeaderWithBodyAfterAuthentication, requestHeaderWithJSONBodyAfterAuthentication,
     requestHeaderWithoutBodyAfterAuthentication
 } from "../components/requestHeaders";
 
@@ -14,3 +14,6 @@ export const addOrderManagementObj = async (token, body) => await
 
 export const deleteOrderManagementObj = async (token, id) => await
     fetch(orderManagementDomainUrl + "delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", null, token));
+
+export const approveOrderManagement = async (token, body) => await
+    fetch(orderManagementDomainUrl + "approvals", requestHeaderWithJSONBodyAfterAuthentication("PUT", body, token))

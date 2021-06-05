@@ -21,6 +21,24 @@ const schema = yup.object().shape({
     message: yup.string().required(),
 })
 
+export const fetchPOs = async (setPurchaseOrders,setIsLoading, setSuccessfulFetch, token)=> {
+    setIsLoading(true)
+    let apps = [];
+    apps = await getAllPO(token)
+        .then(response => response)
+        .then(response => response.json())
+        .catch(() => {
+            setIsLoading(false);
+            toast.info("Oops! Could not connect to the server", toastOptions);
+        });
+
+    setPurchaseOrders(apps);
+    if (apps.length !== 0){
+        setSuccessfulFetch(true)
+    }
+    setIsLoading(false)
+}
+
 const FormSolicitation = (props) => {
     const {handleFormSubmit} = props;
     const token = useSelector(state => state.token);
@@ -35,25 +53,8 @@ const FormSolicitation = (props) => {
         resolver: yupResolver(schema),
     });
 
-    const fetchData = async ()=> {
-        setIsLoading(true)
-        const apps = await getAllPO(token)
-            .then(response => response)
-            .then(response => response.json())
-            .catch(() => {
-                setIsLoading(false);
-                toast.info("Oops! Could not connect to the server", toastOptions);
-            });
-
-        setPurchaseOrders(apps);
-        if (apps.length !== 0){
-            setSuccessfulFetch(true)
-        }
-        setIsLoading(false)
-    }
-
     useEffect(() => {
-        fetchData().then();
+        fetchPOs(setPurchaseOrders,setIsLoading, setSuccessfulFetch, token).then();
     }, []);
 
 

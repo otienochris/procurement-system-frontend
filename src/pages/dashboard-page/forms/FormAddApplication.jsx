@@ -6,12 +6,11 @@ import {CircularProgress, FormControl, FormHelperText, InputLabel, Select, TextF
 import CustomButton from "../../../components/customControls/CustomButton";
 import {useSelector} from "react-redux";
 import {useStyles} from "../../signup-page";
-import {getAllPO} from "../../../services/purchase-order-service";
-import {toast} from "react-toastify";
-import {toastOptions} from "../../../App";
+import {fetchData} from "./FormAddContract";
 
 const schema = yup.object().shape({
     purchaseOrderId: yup.string().required("Purchase Order Id is required"),
+    supplierId: yup.string().required("Supplier Id is required"),
     quotationDocument: yup.mixed().required("Quotation Document is required"),
     message: yup.string().required("Description is required"),
     informationDocument: yup.mixed().required("T&C Document is required")
@@ -22,40 +21,42 @@ const FormAddApplication = (props) => {
     const classes = useStyles();
     const token = useSelector(state => state.token);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
+    const [suppliers, setSuppliers] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [successfulFetch, setSuccessfulFetch] = useState(false);
 
-    const fetchData = async () => {
-        setIsLoading(true)
-        const apps = await getAllPO(token)
-            .then(response => response)
-            .then(response => response.json())
-            .catch(() => {
-                setIsLoading(false);
-                toast.info("Oops! Could not connect to the server", toastOptions);
-            });
-
-        setPurchaseOrders(apps);
-        if (apps.length !== 0) {
-            setSuccessfulFetch(true)
-        }
-        setIsLoading(false)
-    }
-
-    const {register, reset, handleSubmit, formState: {errors}} = useForm({
+    const {register, handleSubmit, formState: {errors}} = useForm({
         mode: "onChange",
         resolver: yupResolver(schema),
         criteriaMode: "all"
     })
 
     useEffect(() => {
-        fetchData().then()
+        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token).then()
     }, [])
 
 
     return (
         isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> : successfulFetch ?
             <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
+                <FormControl error={!!errors.supplierId} fullWidth={true}>
+                    <InputLabel>Supplier...</InputLabel>
+                    <Select
+                        native={true}
+                        variant={"outlined"}
+                        {...register("supplierId")}
+                        error={!!errors.supplierId}
+                    >
+                        <option value={""}>{}</option>
+                        {suppliers.map(
+                            supplier =>
+                                <option key={supplier.kra} value={supplier.kra}>
+                                    {supplier.name}
+                                </option>
+                        )}
+                    </Select>
+                    <FormHelperText>{errors.supplierId?.message}</FormHelperText>
+                </FormControl>
                 <FormControl fullWidth={true}>
                     <InputLabel>Purchase Order</InputLabel>
                     <Select native={true} {...register("purchaseOrderId")} error={!!errors.purchaseOrderId}>
@@ -82,7 +83,7 @@ const FormAddApplication = (props) => {
                     <FormHelperText>{errors.informationDocument?.message}</FormHelperText>
                 </FormControl>
                 <CustomButton text={"Submit"} type={"submit"}/>
-            </form> : <h5>Error, could not find any purchase order</h5>
+            </form> : <h5>Error, either there are no free suppliers or purchase orders</h5>
     )
 }
 

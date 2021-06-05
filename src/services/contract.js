@@ -14,3 +14,6 @@ export const addContract = async (token, body) => await
 
 export const deleteContract = async (token, id) => await
     fetch(ContractDomainUrl + "delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", null, token));
+
+export const updateContract = async (token, body, id) => await
+    fetch(ContractDomainUrl + "update/" + id, requestHeaderWithBodyAfterAuthentication("PUT", body, token));

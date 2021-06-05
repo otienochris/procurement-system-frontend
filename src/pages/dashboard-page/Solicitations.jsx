@@ -4,17 +4,25 @@ import {useSelector} from "react-redux";
 import FormSolicitation from "./forms/FormSolicitation";
 import Popup from "../../components/customControls/Popup";
 import {toast} from "react-toastify";
-import {addSolicitation, deleteSolicitation, getAllSolicitations} from "../../services/solicitation";
+import {
+    addSolicitation,
+    deleteSolicitation,
+    getAllSolicitations,
+    updateSolicitation
+} from "../../services/solicitation";
+import FormEditSolicitation from "./forms/FormEditSolicitation";
 
 const Solicitations = () => {
     const token = useSelector(state => state.token);
-    const [solicitations, setSolicitations] = useState([])
+    const [solicitations, setSolicitations] = useState([]);
+    const [defaultValues, setDefaultValues] = useState({});
     const [openPopup, setOpenPopup] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
     const [updateTable, setUpdateTable] = useState(false);
 
     const fetchData = async (type, body) => {
         switch (type) {
-            case "getAllSolicitations":
+            case "getAll":
                 const solicitationsFromDb = await getAllSolicitations(token)
                     .then(response => {
                         return response;
@@ -23,7 +31,7 @@ const Solicitations = () => {
                     .catch(() => toast.info("Oops! Cannot connect to the server", {}));
                 setSolicitations(solicitationsFromDb);
                 break;
-            case "addSolicitation":
+            case "save":
                 await addSolicitation(token, body)
                     .then(response => {
                         setUpdateTable(!updateTable);
@@ -33,17 +41,30 @@ const Solicitations = () => {
                             : toast.error("Error adding solicitation", {position: "bottom-right"})
                     })
                     .then()
-                    .catch(() => toast.info("Oops! Cannot connect to the server", {}));
+                    .catch(() => toast.info("Oops! Cannot connect to the server", {position: "bottom-right"}));
                 break;
             case "delete":
                 await deleteSolicitation(token, body).then(response => {
                     if (response.ok){
-                        setUpdateTable(!updateTable)
+                        setUpdateTable(!updateTable);
                     }
                     return response.ok ? toast.success("Item deleted successfully", {position: "bottom-right"})
                         : toast.error("Error deleting the item, try again", {position: "bottom-right"})
                 }).then().catch(() => toast.info("Oops! Could not reach the server"));
                 break;
+            case "update":
+                await updateSolicitation(token, body, defaultValues.id)
+                    .then(response => {
+                        setUpdateTable(!updateTable);
+                        setOpenEdit(false);
+                        return response.ok ?
+                            toast.success("Successfully updated the solicitation", {position: "bottom-right"})
+                            : toast.error("Error updating solicitation", {position: "bottom-right"})
+                    })
+                    .then()
+                    .catch(() => toast.info("Oops! Cannot connect to the server", {}));
+
+                break
             default:
                 break;
         }
@@ -51,12 +72,19 @@ const Solicitations = () => {
     }
 
     useEffect(() => {
-        fetchData("getAllSolicitations").then();
+        fetchData("getAll").then();
     }, [updateTable])
 
     const handleFormSubmit = (data) => {
         console.log(data);
-        fetchData("addSolicitation", data).then()
+        fetchData("save", data).then()
+    }
+    const handleEdit = (rowData) => {
+        setDefaultValues(rowData);
+    }
+
+    const handleEditSubmit = (newData) => {
+        fetchData("update", newData).then()
     }
     return (
         <>
@@ -78,13 +106,17 @@ const Solicitations = () => {
                         render: (rowData) => new Date(rowData.deadline).toDateString()
                     }
                 ]}
-                handleDelete={fetchData}
                 setOpenPopup={setOpenPopup}
+                setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
+                handleEdit={handleEdit}
 
             />
             <Popup title="Add Solicitation" openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormSolicitation handleFormSubmit={handleFormSubmit}/>
+            </Popup>
+            <Popup title={"Edit Solicitation"} openPopup={openEdit} setOpenPopup={setOpenEdit} >
+                <FormEditSolicitation handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
             </Popup>
         </>)
 }
