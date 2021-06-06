@@ -12,7 +12,8 @@ const schema = yup.object().shape({
     needDocument: yup.mixed(),
     analysisDocument: yup.mixed(),
     emergencyDocument: yup.mixed(),
-    description: yup.string()
+    description: yup.string().required("Description is required"),
+    departmentId: yup.string().required("Department Id is required")
 })
 
 
@@ -27,6 +28,17 @@ const FormEditPurchaseRequisition = (props) => {
     });
     return (
         <form className={classes.contentArea} onSubmit={handleSubmit(handleEditSubmit)}>
+
+            <Controller render={({field: {value,onChange}}) => (
+                <CustomTextField
+                    label="Department Id"
+                    placeholder="Enter our department id"
+                    value={value}
+                    onChange={onChange}
+                    fullWidth
+                    inputError={errors.departmentId}
+                />
+            )} name={"departmentId"} control={control} defaultValue={defaultValues.departmentId} />
 
             <Controller render={({field:{value, onChange}})=>(
                 <CustomTextField

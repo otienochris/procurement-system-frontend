@@ -33,7 +33,6 @@ const OrderManagement = () => {
                     .then(result => result.json())
                     .catch();
                 setOrderManagementObjs(OM);
-                console.log(OM);
                 break;
             case "save":
                 await addOrderManagementObj(token, body)

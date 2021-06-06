@@ -18,10 +18,9 @@ const schema = yup.object().shape({
 
 
 const FormEditContract = (props) => {
-    const {handleEditSubmit, defaultValues} = props;
+    const {handleEditSubmit, defaultValues, contracts, solicitation} = props;
     const token = useSelector(state => state.token);
     const [isLoading, setIsLoading] = useState(false);
-    const [successfulFetch, setSuccessfulFetch] = useState(false);
     const [suppliers, setSuppliers] = useState([]);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
 
@@ -33,12 +32,13 @@ const FormEditContract = (props) => {
     const classes = useStyles();
 
     useEffect(() => {
-        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token).then();
+        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, null, token,contracts,null, solicitation).then();
+        console.log(defaultValues);
     }, []);
 
     return (
         isLoading ? <CircularProgress style={{margin: "12vh auto"}}/>
-            : successfulFetch ?
+            :
             <form onSubmit={handleSubmit(handleEditSubmit)} className={classes.contentArea}>
                 <Controller render={({field:{value, onChange}}) => (
                     <FormControl error={!!errors.supplierId} fullWidth={true}>
@@ -52,9 +52,9 @@ const FormEditContract = (props) => {
                         >
                             <option value={""}>{}</option>
                             {suppliers.map(
-                                supplier =>
-                                    <option key={supplier.kra} value={supplier.kra}>
-                                        {supplier.name}
+                                kra =>
+                                    <option key={kra} value={kra}>
+                                        {kra}
                                     </option>
                             )}
                         </Select>
@@ -74,9 +74,9 @@ const FormEditContract = (props) => {
                         >
                             <option value={""}>{}</option>
                             {purchaseOrders.map(
-                                purchaseOrder =>
-                                    <option key={purchaseOrder.id} value={purchaseOrder.id}>
-                                        {purchaseOrder.id}
+                                id =>
+                                    <option key={id} value={id}>
+                                        {id}
                                     </option>
                             )}
                         </Select>
@@ -115,7 +115,6 @@ const FormEditContract = (props) => {
 
                 <CustomButton type={"submit"} text={"Submit"} />
             </form>
-            : <h5>Error finding either free suppliers or open purchase order</h5>
     )
 }
 

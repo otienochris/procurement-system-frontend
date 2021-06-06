@@ -4,11 +4,18 @@ import CustomMaterialTable from "../../components/customControls/CustomMaterialT
 import Popup from "../../components/customControls/Popup";
 import {useStyles} from "./Employees";
 import FormSupplierSignup from "../signup-page/Forms/FormSupplierSignup";
-import {deleteSupplier, getAllSuppliers, saveSupplier, updateSupplier} from "../../services/users/supplier-service";
+import {
+    deleteSupplier,
+    getAllSuppliers,
+    saveSupplier,
+    toggleAccountStatus,
+    updateSupplier
+} from "../../services/users/supplier-service";
 import CustomButton from "../../components/customControls/CustomButton";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
 import FormEditSupplier from "./forms/FormEditSupplier";
+
 
 function Suppliers(props) {
     const token = useSelector((state) => state.token);
@@ -67,7 +74,22 @@ function Suppliers(props) {
                     })
                     .then()
                     .catch(() => {
-                        toast.info("Oops! Could not connec to the server", {position: "bottom-right"})
+                        toast.info("Oops! Could not connect to the server", {position: "bottom-right"})
+                    })
+                break;
+            case "toggleStatus":
+                await toggleAccountStatus(token, body)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            toast.success("Successfully changed Account status", {position: "bottom-right"})
+                        } else {
+                            toast.error("Error changing account status", {position: "bottom-right"})
+                        }
+                    })
+                    .then()
+                    .catch(() => {
+                        toast.info("Oops! Could not connect to the server", {position: "bottom-right"})
                     })
                 break
             default:
@@ -92,6 +114,10 @@ function Suppliers(props) {
         setDefaultValues(rowData);
     }
 
+    const toggleStatus = (e) => {
+        fetchData("toggleStatus", e.currentTarget.value).then()
+    }
+
     return (
         <>
             <div className={classes.spacingStyle}>
@@ -109,8 +135,16 @@ function Suppliers(props) {
                             // editable: false,
                             // defaultGroupOrder: 0,
                             render: (rowData) => !rowData.isAccountActive ?
-                                <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/> :
-                                <CustomButton text={"Activated"} style={{backgroundColor: "green"}}/>
+                                <CustomButton
+                                    value={rowData.kra}
+                                    onClick={e => toggleStatus(e)}
+                                    text={"Disabled"} style={{backgroundColor: "red"}}/> :
+                                <CustomButton
+                                    value={rowData.kra}
+                                    onClick={e => toggleStatus(e)}
+                                    text={"Activated"}
+                                    style={{backgroundColor: "green"}}
+                                />
                         },
                     ]}
                     setOpenPopup={setOpenPopup}

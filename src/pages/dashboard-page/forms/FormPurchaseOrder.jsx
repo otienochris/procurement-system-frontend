@@ -21,7 +21,7 @@ const schema = yup.object().shape({
 
 
 const FormPurchaseOrder = (props) => {
-    const {handleFormSubmit} = props;
+    const {handleFormSubmit, purchaseOrders} = props;
     const token = useSelector(state => state.token);
     const [purchaseRequisitions, setPurchaseRequisitions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +40,8 @@ const FormPurchaseOrder = (props) => {
 
     const fetchData = async () => {
         setIsLoading(true)
-        const pr = await getAllPurchaseRequisitions(token)
+        let pr = [];
+        pr = await getAllPurchaseRequisitions(token)
             .then(response => response)
             .then(response => response.json())
             .catch(() => {
@@ -48,9 +49,17 @@ const FormPurchaseOrder = (props) => {
                 toast.info("Oops! Could not connect to the server", toastOptions);
             });
 
-        setPurchaseRequisitions(pr);
-        if (pr.length !== 0){
-            setSuccessfulFetch(true)
+        let invalidIds = purchaseOrders.map(item => item.purchaseRequisitionId);
+        const allPRIds = pr.map(item => item.id);
+        const validIds = allPRIds.filter(item => !invalidIds.includes(item));
+        const finalValidIds = pr.filter(item => item.status === "COMPLETED" && validIds.includes(item.id))
+            .map(item => item.id);
+        console.log(finalValidIds);
+
+        setPurchaseRequisitions(finalValidIds);
+
+        if (finalValidIds.length !== 0) {
+            setSuccessfulFetch(true);
         }
         setIsLoading(false)
     }
@@ -61,57 +70,58 @@ const FormPurchaseOrder = (props) => {
 
     return (
         isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> : successfulFetch ?
-        <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
-            <FormControl fullWidth={true} error={!!errors.purchaseRequisitionId}>
-                <InputLabel>Purchase Requisition</InputLabel>
-                <Select native={true}
-                        variant={"outlined"} {...register("purchaseRequisitionId")}>
-                    <option value={""}>{}</option>
-                    {purchaseRequisitions.map(item => <option key={item.id} value={item.id}>{item.description.slice(0, 20)}</option>)}
-                </Select>
-                <FormHelperText>{errors.purchaseRequisitionId?.message}</FormHelperText>
-            </FormControl>
-            <CustomTextField
-                label="Description"
-                placeholder="Provide a brief description of the items, urgency and apparent need"
-                fullWidth
-                multiline
-                {...register("description")}
-                inputError={errors.description}
-            />
-            <FormControl fullWidth={true}>
-                <h6>Request for Quotation</h6>
-                <input
-                    required
-                    type="file"
-                    accept={"application/pdf"}
-                    {...register("rfpTemplate")}
+            <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
+                <FormControl fullWidth={true} error={!!errors.purchaseRequisitionId}>
+                    <InputLabel>Purchase Requisition</InputLabel>
+                    <Select native={true}
+                            variant={"outlined"} {...register("purchaseRequisitionId")}>
+                        <option value={""}>{}</option>
+                        {purchaseRequisitions.map(id => <option key={id}
+                                                                  value={id}>{id}</option>)}
+                    </Select>
+                    <FormHelperText>{errors.purchaseRequisitionId?.message}</FormHelperText>
+                </FormControl>
+                <CustomTextField
+                    label="Description"
+                    placeholder="Provide a brief description of the items, urgency and apparent need"
+                    fullWidth
+                    multiline
+                    {...register("description")}
+                    inputError={errors.description}
                 />
-                <FormHelperText>{errors.rfpTemplate?.message}</FormHelperText>
-            </FormControl>
-            <FormControl error={!!errors.rfiTemplate} fullWidth>
-                <h6>Request for Information</h6>
-                <input
-                    required
-                    type="file"
-                    accept={"application/pdf"}
-                    {...register("rfiTemplate")}
-                />
-                <FormHelperText>{errors.rfiTemplate?.message}</FormHelperText>
-            </FormControl>
-            <FormControl error={!!errors.termsAndConditions} fullWidth>
-                <h6>Terms and Conditions</h6>
-                <input
-                    required
-                    type="file"
-                    accept={"application/pdf"}
-                    {...register("termsAndConditions")}
-                />
-                <FormHelperText>{errors.termsAndConditions?.termsAndConditions}</FormHelperText>
-            </FormControl>
+                <FormControl fullWidth={true}>
+                    <h6>Request for Quotation</h6>
+                    <input
+                        required
+                        type="file"
+                        accept={"application/pdf"}
+                        {...register("rfpTemplate")}
+                    />
+                    <FormHelperText>{errors.rfpTemplate?.message}</FormHelperText>
+                </FormControl>
+                <FormControl error={!!errors.rfiTemplate} fullWidth>
+                    <h6>Request for Information</h6>
+                    <input
+                        required
+                        type="file"
+                        accept={"application/pdf"}
+                        {...register("rfiTemplate")}
+                    />
+                    <FormHelperText>{errors.rfiTemplate?.message}</FormHelperText>
+                </FormControl>
+                <FormControl error={!!errors.termsAndConditions} fullWidth>
+                    <h6>Terms and Conditions</h6>
+                    <input
+                        required
+                        type="file"
+                        accept={"application/pdf"}
+                        {...register("termsAndConditions")}
+                    />
+                    <FormHelperText>{errors.termsAndConditions?.termsAndConditions}</FormHelperText>
+                </FormControl>
 
-            <CustomButton text="submit" type="submit"/>
-        </form> : <h6>Sorry, could not find any purchase requisition to link to a purchase order</h6>
+                <CustomButton text="submit" type="submit"/>
+            </form> : <h6>Sorry, could not find any purchase requisition to link to a purchase order</h6>
     );
 };
 

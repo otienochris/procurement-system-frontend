@@ -19,10 +19,9 @@ const schema = yup.object().shape({
 })
 
 const FormEditSolicitation = (props) => {
-    const {handleEditSubmit, defaultValues} = props;
+    const {handleEditSubmit, defaultValues, solicitations} = props;
     const token = useSelector(state => state.token);
     const [isLoading, setIsLoading] = useState(false);
-    const [successfulFetch, setSuccessfulFetch] = useState(false);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
     const classes = useStyles();
 
@@ -33,13 +32,16 @@ const FormEditSolicitation = (props) => {
     });
 
     useEffect(() => {
-        fetchPOs(setPurchaseOrders,setIsLoading, setSuccessfulFetch, token).then();
+        // fetchPOs(setPurchaseOrders,setIsLoading, setSuccessfulFetch, token).then();
+        fetchPOs(setPurchaseOrders,null, null, setIsLoading, null,
+            solicitations, null, null, token).then();
+
     }, []);
 
 
     return (
         isLoading ? <CircularProgress style={{margin: "12vh auto"}}/>
-            : successfulFetch ?
+            :
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <form onSubmit={handleSubmit(handleEditSubmit)} className={classes.contentArea}>
 
@@ -49,15 +51,15 @@ const FormEditSolicitation = (props) => {
                             <Select
                                 native={true}
                                 variant={"outlined"}
-                                error={!!errors.purchaseOrderId}
                                 value={value}
                                 onChange={onChange}
+                                error={!!errors.purchaseOrderId}
                             >
                                 <option value={""}>{}</option>
                                 {purchaseOrders.map(
-                                    purchaseOrder =>
-                                        <option key={purchaseOrder.id} value={purchaseOrder.id}>
-                                            {purchaseOrder.id}
+                                    id =>
+                                        <option key={id} value={id}>
+                                            {id}
                                         </option>
                                 )}
                             </Select>
@@ -94,8 +96,6 @@ const FormEditSolicitation = (props) => {
                     <CustomButton text={"Submit"} type={"submit"}/>
                 </form>
             </MuiPickersUtilsProvider>
-
-            : <h5>Error finding purchase orders</h5>
     )
 }
 

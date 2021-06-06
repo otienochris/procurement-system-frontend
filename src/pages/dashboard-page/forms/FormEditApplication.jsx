@@ -17,13 +17,12 @@ const schema = yup.object().shape({
 })
 
 const FormEditApplication = (props) => {
-    const {handleEditSubmit, defaultValues} = props;
+    const {handleEditSubmit, defaultValues, applications, solicitations} = props;
     const classes = useStyles();
     const token = useSelector(state => state.token);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [successfulFetch, setSuccessfulFetch] = useState(false);
 
     const {handleSubmit, formState: {errors}, control} = useForm({
         mode: "onChange",
@@ -32,12 +31,12 @@ const FormEditApplication = (props) => {
     })
 
     useEffect(() => {
-        fetchData(setSuppliers,setPurchaseOrders, setIsLoading, setSuccessfulFetch, token).then()
+        fetchData(setSuppliers,setPurchaseOrders, setIsLoading, null, token,null, applications, solicitations).then();
     }, [])
 
 
     return (
-        isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> : successfulFetch ?
+        isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> :
             <form onSubmit={handleSubmit(handleEditSubmit)} className={classes.contentArea}>
                 <Controller render={({field:{value, onChange}}) => (
                     <FormControl error={!!errors.supplierId} fullWidth={true}>
@@ -51,9 +50,9 @@ const FormEditApplication = (props) => {
                         >
                             <option value={""}>{}</option>
                             {suppliers.map(
-                                supplier =>
-                                    <option key={supplier.kra} value={supplier.kra}>
-                                        {supplier.name}
+                                kra =>
+                                    <option key={kra} value={kra}>
+                                        {kra}
                                     </option>
                             )}
                         </Select>
@@ -71,8 +70,8 @@ const FormEditApplication = (props) => {
                         >
                             <option value="">{}</option>
                             {purchaseOrders.map(
-                                purchaseOrder =>
-                                    <option key={purchaseOrder.id} value={purchaseOrder.id}>{purchaseOrder.id}</option>
+                                id =>
+                                    <option key={id} value={id}>{id}</option>
                             )}
                         </Select>
                         <FormHelperText>{errors.purchaseOrderId?.message}</FormHelperText>
@@ -115,7 +114,7 @@ const FormEditApplication = (props) => {
                 )} name={"informationDocument"} control={control}/>
 
                 <CustomButton text={"Submit"} type={"submit"}/>
-            </form> : <h5>Error, either the purchase order or supplier <br/> linked here no longer exists</h5>
+            </form>
     )
 }
 

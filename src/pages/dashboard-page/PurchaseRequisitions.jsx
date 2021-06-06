@@ -4,18 +4,21 @@ import {useStyles} from "./Employees";
 import Popup from "../../components/customControls/Popup";
 import FormPurchaseRequisition from "./forms/FormPurchaseRequisition";
 import {
+    approvePurchaseRequisition,
     deletePurchaseRequisition,
     getAllPurchaseRequisitions,
     savePurchaseRequisition,
     updatePurchaseRequisition
 } from "../../services/purchase-requisition-service";
 import {useSelector} from "react-redux";
-import {IconButton} from "@material-ui/core";
+import {Button, ButtonGroup, IconButton} from "@material-ui/core";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
 import FormEditPurchaseRequisition from "./forms/FormEditPurchaseRequisition";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 export const openNewWindow = (url) => {
     window.open(url)
@@ -26,14 +29,15 @@ function PurchaseRequisitions() {
     const [openPopup, setOpenPopup] = useState(false);
     const [openEdit, setOpenEdit] = useState(false)
     const token = useSelector(state => state.token);
-    const [purchaseRequisitions, setPurchaseRequisitions] = useState();
+    const [purchaseRequisitions, setPurchaseRequisitions] = useState([]);
     const [defaultValues, setDefaultValues] = useState({});
     const [updateTable, setUpdateTable] = useState(false);
 
     const fetchData = async (type, body) => {
         switch (type) {
             case "getAll":
-                const PR = await getAllPurchaseRequisitions(token).then(resp => resp)
+                let PR = [];
+                PR = await getAllPurchaseRequisitions(token).then(resp => resp)
                     .then(result => result.json());
                 setPurchaseRequisitions(PR);
                 break
@@ -77,7 +81,20 @@ function PurchaseRequisitions() {
                         })
                     .then()
                     .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
-                break
+                break;
+            case "approve":
+                await approvePurchaseRequisition(token, body.id, body.status)
+                    .then(response => {
+                        if (response.ok) {
+                            setUpdateTable(!updateTable);
+                            toast.success("Successfully updated the purchase requisition's status", {position: "bottom-right"});
+                        } else {
+                            toast.error("Error changing the item's status", {position: "bottom-right"});
+                        }
+                    })
+                    .then()
+                    .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
+                break;
             default:
                 break
         }
@@ -101,6 +118,7 @@ function PurchaseRequisitions() {
             formData.append("emergencyDocument", newData.emergencyDocument[0]);
         }
         formData.append("description", newData.description);
+        formData.append("departmentId", newData.departmentId);
 
         fetchData("update", formData).then()
     }
@@ -112,7 +130,14 @@ function PurchaseRequisitions() {
         formData.append("analysisDocument", data.analysisDocument[0]);
         formData.append("emergencyDocument", data.emergencyDocument[0]);
         formData.append("description", data.description);
+        formData.append("departmentId", data.departmentId);
+
         fetchData("save", formData).then()
+    }
+
+    const handleApprovals = (e, id) => {
+        const body = {id, status: e.currentTarget.value}
+        fetchData("approve", body).then();
     }
 
     useEffect(() => {
@@ -147,7 +172,6 @@ function PurchaseRequisitions() {
                     },
                     {
                         title: "Analysis Doc", field: "analysisDocumentUrl", render: (rowData) => {
-                            console.log(rowData);
                             return <div>
                                 <IconButton size={"small"}
                                             onClick={() => openNewWindow(rowData.analysisDocumentUrl)}
@@ -189,7 +213,29 @@ function PurchaseRequisitions() {
                                 </div>
                             )
                         }
-                    }
+                    },
+                    {title: "status", field: "status", render: (rowData) => {
+                            return (
+                                rowData.status === "PENDING" ?
+                                    <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
+                                        <Button
+                                            value={"COMPLETED"}
+                                            onClick={e => handleApprovals(e, rowData.id)}
+                                            color={"primary"}
+                                        >
+                                            approve
+                                        </Button>
+                                        <Button
+                                            value={"CANCELLED"}
+                                            color={"secondary"}
+                                            onClick={ e => handleApprovals(e, rowData.id)}
+                                            variant={"outlined"}
+                                        >decline</Button>
+                                    </ButtonGroup>: rowData.status === "COMPLETED" ?
+                                    <CheckCircleIcon fontSize={"large"} style={{color: "green"}} color={"action"} /> :
+                                    <CancelIcon fontSize={"large"} color={"error"} />
+                            )
+                        }}
 
                 ]}
                 data={purchaseRequisitions}

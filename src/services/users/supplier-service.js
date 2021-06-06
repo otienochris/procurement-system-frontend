@@ -6,6 +6,7 @@ import {
 } from "../../components/requestHeaders";
 
 const suppliersDomainUrl = apiDomain + "/suppliers/"
+export const usersDomainUrl = apiDomain + "/users/toggleStatus/"
 
 export const saveSupplier = async (body) =>
     await fetch(suppliersDomainUrl + "signup", requestHeaderWithBodyBeforeAuthentication(body));
@@ -18,3 +19,6 @@ export const deleteSupplier = async (token, id) =>
 
 export const updateSupplier = async (token, id, body) =>
     await fetch(suppliersDomainUrl + "update/" + id, requestHeaderWithJSONBodyAfterAuthentication("PUT", body, token));
+
+export const toggleAccountStatus = async (token, id) => await
+    fetch(usersDomainUrl + id, requestHeaderWithBodyAfterAuthentication("PUT", null, token));

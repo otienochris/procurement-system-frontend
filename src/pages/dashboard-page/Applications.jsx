@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {IconButton, Paper} from "@material-ui/core";
+import {Button, ButtonGroup, IconButton, Paper} from "@material-ui/core";
 import {useStyles} from "./Users";
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
@@ -11,16 +11,20 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import Popup from "../../components/customControls/Popup";
 import FormAddApplication from "./forms/FormAddApplication";
 import {
-    addApplication,
+    addApplication, approveApplication,
     deleteApplication,
     getAllApplications,
     updateApplication
 } from "../../services/applicationService";
 import FormEditApplication from "./forms/FormEditApplication";
+import {getAllSolicitations} from "../../services/solicitation";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 const Applications = () => {
     const classes = useStyles();
     const [applications, setApplications] = useState([]);
+    const [solicitations, setSolicitations] = useState([]);
     const [defaultValues, setDefaultValues] = useState({});
     const token = useSelector(state => state.token);
     const [openPopup, setOpenPopup] = useState(false);
@@ -29,11 +33,13 @@ const Applications = () => {
 
     const fetchData = async (type, body) => {
         switch (type) {
-            case "getAllApplications":
+            case "getAll":
                 const apps = await getAllApplications(token).then(response => response).then(result => result.json());
+                const solicitations = await getAllSolicitations(token).then(res => res).then(result => result.json());
                 setApplications(apps);
+                setSolicitations(solicitations);
                 break;
-            case "saveApplication":
+            case "save":
                 await addApplication(token, body)
                     .then(response => {
                         if (response.ok) {
@@ -73,6 +79,22 @@ const Applications = () => {
                     return response.ok ? toast.success("Item successfully deleted", {position: "bottom-right"})
                         : toast.error("Error deleting the item", {position: "bottom-right"})
                 }).then().catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}))
+                break;
+            case "approve":
+                await approveApplication(token, body.id, body.status)
+                    .then(response => {
+                        if (response.ok) {
+                            setUpdateTable(!updateTable);
+                            setOpenEdit(false);
+                            toast.success("Application status changed successful", toastOptions);
+                        } else {
+                            setOpenPopup(false);
+                            toast.error("Error changing Application's status", toastOptions);
+                        }
+                    })
+                    .then().catch(reason => {
+                        toast.info("Oops! Could not connect to the server", toastOptions)
+                    })
                 break
             default:
                 break;
@@ -86,7 +108,7 @@ const Applications = () => {
         formData.append("message", data.message);
         formData.append("quotationDocument", data.quotationDocument[0]);
         formData.append("informationDocument", data.informationDocument[0]);
-        fetchData("saveApplication", formData).then()
+        fetchData("save", formData).then()
     }
     const handleEdit = (rowData) => {
         setDefaultValues(rowData)
@@ -108,8 +130,13 @@ const Applications = () => {
         })
         fetchData("update", formData).then()
     }
+
+    const handleApprovals = (e, id) => {
+        fetchData("approve", {id, status: e.currentTarget.value}).then()
+    }
+
     useEffect(() => {
-        fetchData("getAllApplications").then()
+        fetchData("getAll").then()
     }, [updateTable])
 
     return (
@@ -151,7 +178,29 @@ const Applications = () => {
                                     </IconButton>
                                 </div>
                             }
-                        }
+                        },
+                        {title: "approval", render: (rowData) => {
+                                return (
+                                    rowData.status === "PENDING" ?
+                                        <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
+                                            <Button
+                                                value={"COMPLETED"}
+                                                onClick={e => handleApprovals(e, rowData.id)}
+                                                color={"primary"}
+                                            >
+                                                accept
+                                            </Button>
+                                            <Button
+                                                value={"CANCELLED"}
+                                                color={"secondary"}
+                                                onClick={ e => handleApprovals(e, rowData.id)}
+                                                variant={"outlined"}
+                                            >decline</Button>
+                                        </ButtonGroup>: rowData.status === "COMPLETED" ?
+                                        <CheckCircleIcon fontSize={"large"} style={{color: "green"}} color={"action"} /> :
+                                        <CancelIcon fontSize={"large"} style={{color: "red"}} color={"error"} />
+                                )
+                            } }
                     ]}
                     data={applications}
                     setOpenPopup={setOpenPopup}
@@ -160,10 +209,10 @@ const Applications = () => {
                     handleEdit={handleEdit}
                 />
                 <Popup title={"Add Application"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
-                    <FormAddApplication handleFormSubmit={handleFormSubmit}/>
+                    <FormAddApplication solicitations={solicitations} applications={applications} handleFormSubmit={handleFormSubmit}/>
                 </Popup>
                 <Popup title={"Edit Application"} openPopup={openEdit} setOpenPopup={setOpenEdit}>
-                    <FormEditApplication handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
+                    <FormEditApplication applications={applications} solicitations={solicitations} handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
                 </Popup>
             </div>
         </Paper>

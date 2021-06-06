@@ -10,10 +10,11 @@ import {
 } from "../../services/users/department-heads-service";
 import {useSelector} from "react-redux";
 import FormDepartmentsHeadsSignup from "../signup-page/Forms/FormDepartmentsHeadsSignup";
-import CustomButton from "../../components/customControls/CustomButton";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
 import FormEditDepartmentHead from "./forms/FormEditDepartmentHead";
+import CustomButton from "../../components/customControls/CustomButton";
+import {toggleAccountStatus} from "../../services/users/supplier-service";
 
 const DepartmentHeads = () => {
     const classes = useStyles();
@@ -45,8 +46,7 @@ const DepartmentHeads = () => {
                 })
                 break;
             case "delete":
-                let empId = oldDepartmentHead.empId.replaceAll("/", "_");
-
+                let empId = body.replaceAll("/", "_");
                 await deleteDepartmentHead(token, empId)
                     .then(res => {
                         if (res.ok) {
@@ -72,8 +72,24 @@ const DepartmentHeads = () => {
                         }
                     })
                     .then()
-                    .catch(()=> toast.info("Oops! Could not connect to the server",{position: "bottom-right"}));
+                    .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}));
                 break;
+            case "toggleAccountStatus":
+                let username = body.replaceAll("/", "_")
+                await toggleAccountStatus(token, username)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            toast.success("Successfully changed Account status", {position: "bottom-right"})
+                        } else {
+                            toast.error("Error changing account status", {position: "bottom-right"})
+                        }
+                    })
+                    .then()
+                    .catch(() => {
+                        toast.info("Oops! Could not connect to the server", {position: "bottom-right"})
+                    })
+                break
             default:
                 break;
         }
@@ -96,6 +112,10 @@ const DepartmentHeads = () => {
         fetchData("update", newDepartmentHead).then();
     }
 
+    const toggleStatus = (e) => {
+        fetchData("toggleAccountStatus", e.currentTarget.value).then()
+    }
+
     // console.log(departmentHeads)
 
     return (
@@ -108,16 +128,22 @@ const DepartmentHeads = () => {
                     {title: "Email", field: "email"},
                     {title: "Full Name", field: "name"},
                     {
-                        title: "Status", field: "active", render: (rowData) => {
-                            if (!rowData.isActive) {
-                                return <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/>
-                            } else {
-                                return <CustomButton text={"Active"} style={{backgroundColor: "green"}}/>
-                            }
-                        }
-                    },
+                        title: "Status",
+                        field: "active",
+                        render: (rowData) => !rowData.active ?
+                            <CustomButton
+                                value={rowData.empId}
+                                onClick={e => toggleStatus(e)}
+                                text={"Disabled"} style={{backgroundColor: "red"}}/> :
+                            <CustomButton
+                                value={rowData.empId}
+                                onClick={e => toggleStatus(e)}
+                                text={"Activated"}
+                                style={{backgroundColor: "green"}}
+                            />
+                },
 
-                ]}
+                    ]}
                 data={departmentHeads}
                 setOpenPopup={setOpenPopup}
                 setOpenEdit={setOpenEdit}

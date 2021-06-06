@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {useForm} from "react-hook-form";
+import {useForm, Controller} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup"
 import {CircularProgress, FormControl, FormHelperText, InputLabel, Select, TextField} from "@material-ui/core";
@@ -17,54 +17,58 @@ const schema = yup.object().shape({
 })
 
 const FormAddApplication = (props) => {
-    const {handleFormSubmit} = props;
+    const {handleFormSubmit, applications, solicitations} = props;
     const classes = useStyles();
     const token = useSelector(state => state.token);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
-    const [suppliers, setSuppliers] = useState([])
+    const [suppliers, setSuppliers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [successfulFetch, setSuccessfulFetch] = useState(false);
 
-    const {register, handleSubmit, formState: {errors}} = useForm({
+    const {register, handleSubmit, control, getValues, formState: {errors}} = useForm({
         mode: "onChange",
         resolver: yupResolver(schema),
         criteriaMode: "all"
     })
 
     useEffect(() => {
-        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token).then()
+        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token, null, applications, solicitations)
+            .then();
+        console.log(applications)
     }, [])
 
 
     return (
         isLoading ? <CircularProgress style={{margin: "12vh auto"}}/> : successfulFetch ?
             <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.contentArea}>
-                <FormControl error={!!errors.supplierId} fullWidth={true}>
-                    <InputLabel>Supplier...</InputLabel>
-                    <Select
-                        native={true}
-                        variant={"outlined"}
-                        {...register("supplierId")}
-                        error={!!errors.supplierId}
-                    >
-                        <option value={""}>{}</option>
-                        {suppliers.map(
-                            supplier =>
-                                <option key={supplier.kra} value={supplier.kra}>
-                                    {supplier.name}
-                                </option>
-                        )}
-                    </Select>
-                    <FormHelperText>{errors.supplierId?.message}</FormHelperText>
-                </FormControl>
+                <Controller render={({field:{value, onChange}})=>(
+                    <FormControl error={!!errors.supplierId} fullWidth={true}>
+                        <InputLabel>Supplier...</InputLabel>
+                        <Select
+                            native={true}
+                            variant={"outlined"}
+                            value={value}
+                            onChange={onChange}
+                            error={!!errors.supplierId}
+                        >
+                            <option value={""}>{}</option>
+                            {suppliers.map(
+                                kra =>
+                                    <option key={kra} value={kra}>
+                                        {kra}
+                                    </option>
+                            )}
+                        </Select>
+                        <FormHelperText>{errors.supplierId?.message}</FormHelperText>
+                    </FormControl>
+                )} name={"supplierId"} control={control} />
+
                 <FormControl fullWidth={true}>
                     <InputLabel>Purchase Order</InputLabel>
                     <Select native={true} {...register("purchaseOrderId")} error={!!errors.purchaseOrderId}>
                         <option value="">{}</option>
-                        {purchaseOrders.map(
-                            purchaseOrder =>
-                                <option key={purchaseOrder.id} value={purchaseOrder.id}>{purchaseOrder.id}</option>
-                        )}
+                        {/*ensure a supplier does not apply for the same purchase order*/}
+                        {purchaseOrders.map( id => <option key={id} value={id}>{id}</option>)}
                     </Select>
                     <FormHelperText>{errors.purchaseOrderId?.message}</FormHelperText>
                 </FormControl>
@@ -83,7 +87,10 @@ const FormAddApplication = (props) => {
                     <FormHelperText>{errors.informationDocument?.message}</FormHelperText>
                 </FormControl>
                 <CustomButton text={"Submit"} type={"submit"}/>
-            </form> : <h5>Error, either there are no free suppliers or purchase orders</h5>
+            </form> : <h5>Error, either
+                <br/> 1. there are no open solicitations
+                <br/> 2. there are no active suppliers
+                <br/> 3. or there are no approved purchase orders</h5>
     )
 }
 

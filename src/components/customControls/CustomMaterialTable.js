@@ -34,6 +34,7 @@ const CustomMaterialTable = (props) => {
                         if (setOpenEdit !== undefined){
                             setOpenEdit(true);
                         }
+                        // if (rowData.status === "C")
                     },
                 },
                 {

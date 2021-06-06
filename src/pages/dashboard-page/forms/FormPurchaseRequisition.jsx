@@ -12,14 +12,15 @@ const schema = yup.object().shape({
     needDocument: yup.mixed().required(),
     analysisDocument: yup.mixed().required(),
     emergencyDocument: yup.mixed().required(),
-    description: yup.string().required()
+    description: yup.string().required(),
+    departmentId: yup.string().required()
 })
 
 const FormPurchaseRequisition = (props) => {
     const {handleFormSubmit, defaultValues} = props;
 
     const classes = useStyles();
-    const {register, handleSubmit, setValue, formState: {errors}} = useForm({
+    const {register, handleSubmit, formState: {errors}} = useForm({
         mode: "onChange",
         resolver: yupResolver(schema),
         criteriaMode: "all",
@@ -29,6 +30,13 @@ const FormPurchaseRequisition = (props) => {
     return (
         <form className={classes.contentArea} onSubmit={handleSubmit(handleFormSubmit)}>
 
+            <CustomTextField
+                label="Department Id"
+                placeholder="Enter our department id"
+                fullWidth
+                {...register("departmentId")}
+                inputError={errors.departmentId}
+            />
             <CustomTextField
                 label="Description"
                 placeholder="Provide a brief description of the need, emergency and items needed"

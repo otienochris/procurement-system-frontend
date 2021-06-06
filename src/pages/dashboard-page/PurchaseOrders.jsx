@@ -26,7 +26,8 @@ const PurchaseOrders = () => {
     const fetchData = async (type, body) => {
         switch (type) {
             case "getAll":
-                const po = await getAllPO(token).then(resp => resp).then(resp => resp.json());
+                let po = [];
+                po = await getAllPO(token).then(resp => resp).then(resp => resp.json());
                 setPurchaseOrders(po)
                 break
             case "save":
@@ -128,7 +129,7 @@ const PurchaseOrders = () => {
                                 return <CustomButton color={"default"} text={rowData.status || rowData}/>
                             } else if (rowData.status === "CANCEllED" || rowData === "CANCEllED") {
                                 return <CustomButton text={rowData.status || rowData} style={{backgroundColor: "red"}}/>
-                            } else if (rowData.status === "APPROVED" || rowData === "APPROVED") {
+                            } else if (rowData.status === "COMPLETED" || rowData === "COMPLETED") {
                                 return <CustomButton text={rowData.status || rowData}
                                                      style={{backgroundColor: "green"}}/>
                             }
@@ -174,7 +175,7 @@ const PurchaseOrders = () => {
                                 </IconButton>
                             </div>
                         }
-                    }
+                    },
 
                 ]}
                 data={purchaseOrders}
@@ -184,7 +185,7 @@ const PurchaseOrders = () => {
                 handleEdit={handleEdit}
             />
             <Popup title="Add Purchase Order" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-                <FormPurchaseOrder handleFormSubmit={handleFormSubmit}/>
+                <FormPurchaseOrder purchaseOrders={purchaseOrders} handleFormSubmit={handleFormSubmit}/>
             </Popup>
             <Popup title={"Edit Purchase Order"} openPopup={openEdit} setOpenPopup={setOpenEdit}>
                 <FormEditPurchaseOrder handleEditSubmit={handleEditSubmit} defaultValues={defaultValues}/>

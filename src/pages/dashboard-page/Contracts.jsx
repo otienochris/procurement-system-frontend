@@ -11,10 +11,12 @@ import {openNewWindow} from "./PurchaseRequisitions";
 import ImportContactsIcon from "@material-ui/icons/ImportContacts";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import FormEditContract from "./forms/FormEditContract";
+import {getAllApplications} from "../../services/applicationService";
 
 const Contracts = () => {
     const token = useSelector(state => state.token);
     const [contracts, setContracts] = useState([]);
+    const [acceptedApplications, setAcceptedApplications] = useState([]);
     const [defaultValues, setDefaultValues] = useState({})
     const [updateTable, setUpdateTable] = useState(false);
     const [openPopup, setOpenPopup] = useState(false);
@@ -70,6 +72,13 @@ const Contracts = () => {
                     .then()
                     .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}))
                 break;
+            case "acceptedApplications":
+                let apps = [];
+                apps = await getAllApplications(token).then(res => res).then(result => result.json());
+                let filteredApplication = []
+                filteredApplication = apps.filter(item => item.status === "COMPLETED")
+                setAcceptedApplications(filteredApplication);
+                break;
             default:
                 break;
         }
@@ -78,6 +87,10 @@ const Contracts = () => {
     useEffect(() => {
         fetchData("getAll").then();
     }, [updateTable]);
+
+    useEffect(()=> {
+        fetchData("acceptedApplications").then();
+    },[])
 
     const handleFormSubmit = (data) => {
 
@@ -154,10 +167,10 @@ const Contracts = () => {
                 handleEdit={handleEdit}
             />
             <Popup title="Add Contract" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-                <FormAddContract handleFormSubmit={handleFormSubmit}/>
+                <FormAddContract applications={acceptedApplications} contracts={contracts} handleFormSubmit={handleFormSubmit}/>
             </Popup>
             <Popup title="Edit Contract" openPopup={openEdit} setOpenPopup={setOpenEdit}>
-                <FormEditContract handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
+                <FormEditContract applications={acceptedApplications} contracts={contracts} handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
             </Popup>
         </>
     )

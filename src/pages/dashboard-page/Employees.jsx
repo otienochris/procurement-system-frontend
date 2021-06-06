@@ -9,6 +9,7 @@ import CustomButton from "../../components/customControls/CustomButton";
 import {toast} from "react-toastify";
 import {toastOptions} from "../../App";
 import FormEditEmployee from "./forms/FormEditEmployee";
+import {toggleAccountStatus} from "../../services/users/supplier-service";
 
 export const useStyles = makeStyles((theme) => ({
     spacingStyle: {
@@ -48,13 +49,13 @@ function Employees() {
                         if (response.ok) {
                             setUpdateTable(!updateTable);
                             setOpenPopup(false);
-                            toast.success("Employee added successfully", toastOptions);
+                            toast.success("Employee added successfully", {position: "bottom-right"});
                         } else {
                             setOpenPopup(false);
-                            toast.error("Failed to add employees", toastOptions);
+                            toast.error("Failed to add employees", {position: "bottom-right"});
                         }
                     }).then().catch(reason => {
-                        toast.info("Oops! Could not connect to the server", toastOptions)
+                        toast.info("Oops! Could not connect to the server", {position: "bottom-right"})
                     });
                 break;
             case "delete":
@@ -64,33 +65,47 @@ function Employees() {
                         if (res.ok) {
                             setUpdateTable(!updateTable);
                             setOpenPopup(false);
-                            toast.success("Employee deleted successfully", toastOptions);
+                            toast.success("Employee deleted successfully", {position: "bottom-right"});
                         } else {
                             setOpenPopup(false);
-                            toast.error("Failed to delete employees", toastOptions);
+                            toast.error("Failed to delete employees", {position: "bottom-right"});
                         }
                     })
                     .then()
-                    .catch(() => toast.info("Oops! Could not connect to the server", toastOptions))
+                    .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}))
                 break;
             case "update":
-                // console.log(oldEmployeeData.id);
                 let empId = oldEmployeeData.id.replaceAll("/", "_");
-                // console.log(empId);
                 await updateEmployee(token, empId, body)
                     .then(res => {
                         if (res.ok) {
                             setUpdateTable(!updateTable);
                             setOpenEdit(false);
-                            toast.success("Employee updated successfully", toastOptions);
+                            toast.success("Employee updated successfully", {position: "bottom-right"});
                         } else {
                             setOpenPopup(false);
-                            toast.error("Failed to update employees", toastOptions);
+                            toast.error("Failed to update employees", {position: "bottom-right"});
+                        }
+                    })
+                    .then()
+                    .catch(() => toast.info("Oops! Could not connect to the server", {position: "bottom-right"}))
+                break;
+            case "toggleAccountStatus":
+                let username = body.replaceAll("/", "_");
+                await toggleAccountStatus(token, username)
+                    .then(res => {
+                        if (res.ok) {
+                            setUpdateTable(!updateTable);
+                            setOpenEdit(false);
+                            toast.success("Successfully changed account status", toastOptions);
+                        } else {
+                            setOpenPopup(false);
+                            toast.error("Failed to change account status", toastOptions);
                         }
                     })
                     .then()
                     .catch(() => toast.info("Oops! Could not connect to the server", toastOptions))
-                break;
+                break
             default:
                 break;
         }
@@ -112,6 +127,10 @@ function Employees() {
     const handleEditSubmit = (data) => {
         fetchData("update", data).then();
     }
+
+    const toggleStatus = (e) => {
+        fetchData("toggleAccountStatus", e.currentTarget.value).then();
+    }
     return (
         <div className={classes.spacingStyle}>
             <CustomMaterialTable
@@ -130,10 +149,21 @@ function Employees() {
                         field: "isActive",
                         default: "false",
                         // defaultGroupOrder: 0,
-                        render: (rowData) =>
-                            rowData.isActive ? <CustomButton text={"Active"} style={{backgroundColor: "green"}}/>
-                                : <CustomButton text={"Disabled"} style={{backgroundColor: "red"}}/>
-                    },
+                        render: (rowData) => {
+                            return rowData.isActive?
+                                <CustomButton
+                                    value={rowData.id}
+                                    onClick={e => toggleStatus(e)}
+                                    text={"Active"}
+                                    style={{backgroundColor: "green"}}
+                                /> :
+                                <CustomButton
+                                    value={rowData.id}
+                                    onClick={e => toggleStatus(e)}
+                                    text={"Disabled"}
+                                    style={{backgroundColor: "red"}}
+                                />
+                        }                    },
                 ]}
                 setOpenPopup={setOpenPopup}
                 setOpenEdit={setOpenEdit}

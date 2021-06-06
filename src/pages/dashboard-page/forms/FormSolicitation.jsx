@@ -21,10 +21,19 @@ const schema = yup.object().shape({
     message: yup.string().required(),
 })
 
-export const fetchPOs = async (setPurchaseOrders,setIsLoading, setSuccessfulFetch, token)=> {
+export const fetchPOs = async (
+    setPoForSolicitation,
+    setPoForContract,
+    setPoForOrderManagement,
+    setIsLoading,
+    setSuccessfulFetch,
+    solicitations,
+    contracts,
+    orderManagement,
+    token)=> {
     setIsLoading(true)
-    let apps = [];
-    apps = await getAllPO(token)
+    let pos = [];
+    pos = await getAllPO(token)
         .then(response => response)
         .then(response => response.json())
         .catch(() => {
@@ -32,15 +41,39 @@ export const fetchPOs = async (setPurchaseOrders,setIsLoading, setSuccessfulFetc
             toast.info("Oops! Could not connect to the server", toastOptions);
         });
 
-    setPurchaseOrders(apps);
-    if (apps.length !== 0){
+    let validIds = [];
+    let allIds = pos.map(item => item.id);
+
+    if (setPoForSolicitation !== null){
+        // for solicitation
+        let invalidIds = solicitations.map(item => item.purchaseOrderId)
+        validIds = allIds.filter(item => !invalidIds.includes(item));
+        setPoForSolicitation(validIds);
+    }
+
+    if (setPoForContract !== null){
+        // for contracts
+        let badIds = contracts.map(item => item.purchaseOrderId);
+        validIds = allIds.filter(item => !badIds.includes(item));
+        setPoForContract(validIds);
+    }
+
+    if (setPoForOrderManagement !== null){
+        // for order management
+        let spoiledIds = orderManagement.map(item => item.purchaseOrderId);
+        validIds = allIds.filter(item => !spoiledIds.includes(item));
+        setPoForOrderManagement(validIds)
+    }
+
+    if (validIds.length !== 0 && setSuccessfulFetch !== null){
         setSuccessfulFetch(true)
     }
     setIsLoading(false)
+    return pos;
 }
 
 const FormSolicitation = (props) => {
-    const {handleFormSubmit} = props;
+    const {handleFormSubmit, solicitations} = props;
     const token = useSelector(state => state.token);
     const [isLoading, setIsLoading] = useState(false);
     const [successfulFetch, setSuccessfulFetch] = useState(false);
@@ -54,7 +87,8 @@ const FormSolicitation = (props) => {
     });
 
     useEffect(() => {
-        fetchPOs(setPurchaseOrders,setIsLoading, setSuccessfulFetch, token).then();
+        fetchPOs(setPurchaseOrders, null, null, setIsLoading, setSuccessfulFetch, solicitations,
+            null, null, token).then()
     }, []);
 
 
@@ -74,9 +108,9 @@ const FormSolicitation = (props) => {
                         >
                             <option value={""}>{}</option>
                             {purchaseOrders.map(
-                                purchaseOrder =>
-                                    <option key={purchaseOrder.id} value={purchaseOrder.id}>
-                                        {purchaseOrder.id}
+                                id =>
+                                    <option key={id} value={id}>
+                                        {id}
                                     </option>
                             )}
                         </Select>

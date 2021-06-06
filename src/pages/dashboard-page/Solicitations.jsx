@@ -113,10 +113,10 @@ const Solicitations = () => {
 
             />
             <Popup title="Add Solicitation" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-                <FormSolicitation handleFormSubmit={handleFormSubmit}/>
+                <FormSolicitation solicitations={solicitations} handleFormSubmit={handleFormSubmit}/>
             </Popup>
             <Popup title={"Edit Solicitation"} openPopup={openEdit} setOpenPopup={setOpenEdit} >
-                <FormEditSolicitation handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
+                <FormEditSolicitation solicitations={solicitations} handleEditSubmit={handleEditSubmit} defaultValues={defaultValues} />
             </Popup>
         </>)
 }

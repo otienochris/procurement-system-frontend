@@ -17,3 +17,6 @@ export const deleteApplication = async (token, id) => await
 
 export const updateApplication = async (token, body, id) =>
     await fetch(applicationDomainUrl + "update/" + id, requestHeaderWithBodyAfterAuthentication("PUT", body, token))
+
+export const approveApplication = async (token, id, status) => await
+    fetch(applicationDomainUrl + "approve/" + id + "/" + status, requestHeaderWithBodyAfterAuthentication("PUT", null, token))
