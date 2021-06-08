@@ -149,6 +149,9 @@ const DepartmentHeads = () => {
                 setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
                 handleEdit={handleEdit}
+                allowEdit={true}
+                allowDelete={true}
+                allowAdd={true}
             />
             <Popup title={"Add Department Head"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormDepartmentsHeadsSignup handleFormSubmit={handleFormSubmit}/>

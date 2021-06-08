@@ -34,6 +34,36 @@ export const tokenActions = (name, payload) => {
 
 export const userActions = (name, payload) => {
   switch (name) {
+    case "SET":
+      return {
+        type: "SET",
+        payload
+      }
+    case "SET_ROLE":
+      return {
+        type: "SET_ROLE",
+        payload
+      }
+    case "SET_NAME":
+      return {
+        type: "SET_NAME",
+        payload
+      }
+    case "SET_EMAIL":
+      return {
+        type: "SET_EMAIL",
+        payload
+      }
+    case "SET_DATECREATED":
+      return {
+        type: "SET_DATECREATED",
+        payload
+      }
+    case "SET_DESCRIPTION":
+      return {
+        type: "SET_DESCRIPTION",
+        payload
+      }
     case "SET_USERNAME":
       return {
         type: "SET_USERNAME",

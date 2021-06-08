@@ -43,7 +43,7 @@ function Index() {
 
   return (
     <Grid container className={customClasses.container}>
-      <Grid item xs={1} sm={3} md={4}></Grid>
+      <Grid item xs={1} sm={3} md={4}>{}</Grid>
       <Grid item xs={10} sm={6} md={4} className={customClasses.contentArea}>
         {isLoggedIn ? (
           <Redirect to="/dashboard" />
@@ -65,7 +65,7 @@ function Index() {
           />
         )}
       </Grid>
-      <Grid item xs={1} sm={3} md={4}></Grid>
+      <Grid item xs={1} sm={3} md={4}>{}</Grid>
     </Grid>
   );
 }

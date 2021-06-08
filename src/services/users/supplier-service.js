@@ -22,3 +22,6 @@ export const updateSupplier = async (token, id, body) =>
 
 export const toggleAccountStatus = async (token, id) => await
     fetch(usersDomainUrl + id, requestHeaderWithBodyAfterAuthentication("PUT", null, token));
+
+export const getSupplierByUsername = async (token, username) => await
+    fetch(suppliersDomainUrl + username, requestHeaderWithoutBodyAfterAuthentication(token));

@@ -14,6 +14,7 @@ import FormEditSolicitation from "./forms/FormEditSolicitation";
 
 const Solicitations = () => {
     const token = useSelector(state => state.token);
+    const role = useSelector(state => state.userDetails.role);
     const [solicitations, setSolicitations] = useState([]);
     const [defaultValues, setDefaultValues] = useState({});
     const [openPopup, setOpenPopup] = useState(false);
@@ -110,6 +111,9 @@ const Solicitations = () => {
                 setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
                 handleEdit={handleEdit}
+                allowAdd={role === "ROLE_ADMIN"}
+                allowEdit={role === "ROLE_ADMIN"}
+                allowDelete={role === "ROLE_ADMIN"}
 
             />
             <Popup title="Add Solicitation" openPopup={openPopup} setOpenPopup={setOpenPopup}>

@@ -152,6 +152,9 @@ function Suppliers(props) {
                     data={suppliers}
                     handleEdit={handleEdit}
                     handleDelete={fetchData}
+                    allowAdd={true}
+                    allowEdit={true}
+                    allowDelete={true}
                 />
             </div>
             <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} title="Add Supplier">

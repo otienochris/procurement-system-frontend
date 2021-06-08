@@ -171,6 +171,9 @@ function Employees() {
                 setData={setEmployees}
                 handleEdit={handleEdit}
                 handleDelete={fetchData}
+                allowAdd={true}
+                allowEdit={true}
+                allowDelete={true}
             />
             <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} title="Add Employee">
                 <FormEmployeeSignup handleFormSubmit={handleFormSubmit}/>

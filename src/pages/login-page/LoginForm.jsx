@@ -1,5 +1,5 @@
 import {ButtonGroup, Paper, Typography} from "@material-ui/core";
-import React from "react";
+import React, {useState} from "react";
 import * as yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {useForm} from "react-hook-form";
@@ -12,6 +12,9 @@ import {useDispatch} from "react-redux";
 import {toast} from "react-toastify";
 import {options} from "./index";
 import {toastOptions} from "../../App";
+import {getEmployeeByUsername} from "../../services/users/employee-service";
+import {getDepartmentHeadByUsername} from "../../services/users/department-heads-service";
+import {getSupplierByUsername} from "../../services/users/supplier-service";
 
 const loginSchema = yup.object().shape({
     username: yup
@@ -41,11 +44,44 @@ function LoginForm({
                 requestHeaderWithBodyBeforeAuthentication(inputData)
             );
             const result = await response.json();
-            setIsLoading(false);
             if (response.ok) {
                 dispatch(isLoggedInActions("SIGN_IN"));
-                dispatch({type: "SET_TOKEN", payload: result.token});
-                toast.info("Welcome back", toastOptions);
+
+                let token2 = result.token
+                dispatch({type: "SET_TOKEN", payload: token2});
+
+                // set user
+                let user = {}
+                if (inputData.username.includes("/")) {
+                    //    the user is thus either an employee or a department head
+                    console.log("in the some sort of shit")
+                    const user_id = inputData.username.replaceAll("/", "_");
+                    user = await getEmployeeByUsername(token2, user_id)
+                        .then(res => res)
+                        .then(result => result.json())
+                    if (user.hasOwnProperty("roles")) {
+                        dispatch(userActions("SET_ROLE", user.roles.role));
+                    } else { // try looking for the user among the department heads
+                        await getDepartmentHeadByUsername(token2, user_id)
+                            .then(res => {
+                                dispatch(userActions("SET_ROLE", "ROLE_DEPARTMENT_HEAD"));
+                                return res
+                            })
+                            .then(result => {
+                                user = result.json()
+                            })
+
+                    }
+                } else {
+                    //    the user is a supplier
+                    user = await getSupplierByUsername(token2, inputData.username)
+                        .then(res => {
+                            dispatch(userActions("SET_ROLE", "ROLE_SUPPLIER"));
+                            return res
+                        })
+                        .then(result => result.json());
+                }
+                toast.info("Welcome back ", toastOptions);
             } else {
                 if (result.message === "User is disabled") {
                     setIsUserDisabled(true);
@@ -56,9 +92,9 @@ function LoginForm({
             }
         } catch (err) {
             toast.error("Error connecting to the server", options);
-            // toast.error(err, options);
-            setIsLoading(false);
         }
+        // toast.error(err, options);
+        setIsLoading(false);
     };
 
     const {

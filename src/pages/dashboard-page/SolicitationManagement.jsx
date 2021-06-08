@@ -6,12 +6,14 @@ import {useStyles} from "./Users";
 import OrderManagement from "./OrderManagement";
 import Contracts from "./Contracts";
 import Solicitations from "./Solicitations";
+import {useSelector} from "react-redux";
 // import {fetchPO} from "./forms/FormRequestForInformaton";
 
 const SolicitationManagement = () => {
 
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0);
+    const role = useSelector(state => state.userDetails.role);
 
     const handleChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -21,14 +23,14 @@ const SolicitationManagement = () => {
         <Paper className={classes.bodySection}>
             <AppBar position={"static"} color={"default"}>
                 <Tabs value={selectedTab} onChange={handleChange} centered={true}>
-                    <Tab label={"Solicitations"}/>
-                    <Tab label={"Contracts"}/>
+                    {role !== "ROLE_DEPARTMENT_HEAD" && <Tab label={"Solicitations"}/> }
+                    {role !== "ROLE_DEPARTMENT_HEAD" && <Tab label={"Contracts"}/> }
                     <Tab label={"Order Management"}/>
                 </Tabs>
             </AppBar>
-            {selectedTab === 0 && <Solicitations />}
-            {selectedTab === 1 && <Contracts />}
-            {selectedTab === 2 && <OrderManagement/>}
+            {(role !== "ROLE_DEPARTMENT_HEAD" && selectedTab === 0) && <Solicitations />}
+            {(role !== "ROLE_DEPARTMENT_HEAD" && selectedTab === 1) && <Contracts />}
+            {((role === "ROLE_DEPARTMENT_HEAD" && selectedTab === 0 ) || selectedTab === 2) && <OrderManagement/>}
         </Paper>)
 }
 

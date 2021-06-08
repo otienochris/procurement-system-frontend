@@ -18,4 +18,7 @@ export const deleteDepartmentHead = async (token, id) =>
     await fetch(headsOfDepartmentUrl + "delete/" + id, requestHeaderWithBodyAfterAuthentication("DELETE", null, token))
 
 export const updateDepartmentHead = async (token, id, body) =>
-    await fetch(headsOfDepartmentUrl + "update/" + id, requestHeaderWithJSONBodyAfterAuthentication("PUT",body, token))
+    await fetch(headsOfDepartmentUrl + "update/" + id, requestHeaderWithJSONBodyAfterAuthentication("PUT",body, token));
+
+export const getDepartmentHeadByUsername = async (token, username) => await
+    fetch(headsOfDepartmentUrl + username, requestHeaderWithoutBodyAfterAuthentication(token))

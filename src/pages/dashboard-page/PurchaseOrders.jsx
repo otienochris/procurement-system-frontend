@@ -183,6 +183,9 @@ const PurchaseOrders = () => {
                 setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
                 handleEdit={handleEdit}
+                allowAdd={true}
+                allowEdit={true}
+                allowDelete={true}
             />
             <Popup title="Add Purchase Order" openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormPurchaseOrder purchaseOrders={purchaseOrders} handleFormSubmit={handleFormSubmit}/>

@@ -29,6 +29,7 @@ function PurchaseRequisitions() {
     const [openPopup, setOpenPopup] = useState(false);
     const [openEdit, setOpenEdit] = useState(false)
     const token = useSelector(state => state.token);
+    const role = useSelector(state => state.userDetails.role)
     const [purchaseRequisitions, setPurchaseRequisitions] = useState([]);
     const [defaultValues, setDefaultValues] = useState({});
     const [updateTable, setUpdateTable] = useState(false);
@@ -216,7 +217,7 @@ function PurchaseRequisitions() {
                     },
                     {title: "status", field: "status", render: (rowData) => {
                             return (
-                                rowData.status === "PENDING" ?
+                                 rowData.status === "PENDING" && role === "ROLE_ADMIN" ?
                                     <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
                                         <Button
                                             value={"COMPLETED"}
@@ -233,7 +234,8 @@ function PurchaseRequisitions() {
                                         >decline</Button>
                                     </ButtonGroup>: rowData.status === "COMPLETED" ?
                                     <CheckCircleIcon fontSize={"large"} style={{color: "green"}} color={"action"} /> :
-                                    <CancelIcon fontSize={"large"} color={"error"} />
+                                     rowData.status === "CANCELED" ?
+                                    <CancelIcon fontSize={"large"} color={"error"} /> : <h6>pending</h6>
                             )
                         }}
 
@@ -243,6 +245,9 @@ function PurchaseRequisitions() {
                 setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
                 handleEdit={handleEdit}
+                allowAdd={role === "ROLE_DEPARTMENT_HEAD"}
+                allowEdit={role === "ROLE_DEPARTMENT_HEAD"}
+                allowDelete={role === "ROLE_DEPARTMENT_HEAD"}
             />
             <Popup title={"Add Purchase Requisition"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormPurchaseRequisition handleFormSubmit={handleFormSubmit} defaultValues={defaultValues}/>

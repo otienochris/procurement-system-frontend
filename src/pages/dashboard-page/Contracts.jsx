@@ -16,6 +16,7 @@ import {getAllApplications} from "../../services/applicationService";
 const Contracts = () => {
     const token = useSelector(state => state.token);
     const [contracts, setContracts] = useState([]);
+    const role = useSelector(state => state.userDetails.role)
     const [acceptedApplications, setAcceptedApplications] = useState([]);
     const [defaultValues, setDefaultValues] = useState({})
     const [updateTable, setUpdateTable] = useState(false);
@@ -165,6 +166,10 @@ const Contracts = () => {
                 setOpenEdit={setOpenEdit}
                 handleDelete={fetchData}
                 handleEdit={handleEdit}
+                // allowDelete={role === "ROLE_ADMIN" ? true : false}
+                allowDelete={role === "ROLE_ADMIN"}
+                allowAdd={role === "ROLE_ADMIN"}
+                allowEdit={role === "ROLE_ADMIN"}
             />
             <Popup title="Add Contract" openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormAddContract applications={acceptedApplications} contracts={contracts} handleFormSubmit={handleFormSubmit}/>

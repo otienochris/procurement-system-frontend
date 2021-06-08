@@ -20,6 +20,10 @@ import CustomButton from "../../components/customControls/CustomButton";
 const OrderManagement = () => {
 
     const token = useSelector(state => state.token);
+    const role = useSelector(state => state.userDetails.role);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isSupplier, setIsSupplier] = useState(false);
+    const [isDepartmentHead, setIsDepartmentHead] = useState(false);
     const [openPopup, setOpenPopup] = useState(false);
     const [updateTable, setUpdateTable] = useState(false);
     const [orderManagementObjs, setOrderManagementObjs] = useState([]);
@@ -82,7 +86,15 @@ const OrderManagement = () => {
     }
 
     useEffect(() => {
-        fetchData("getAll").then()
+        fetchData("getAll").then();
+        if (role === "ROLE_ADMIN"){
+            setIsAdmin(true);
+        } else if(role === "ROLE_SUPPLIER"){
+            setIsSupplier(true);
+        } else if(role === "ROLE_DEPARTMENT_HEAD"){
+            setIsDepartmentHead(true)
+        }
+
     }, [updateTable]);
 
     const handleFormSubmit = (data) => {
@@ -134,7 +146,7 @@ const OrderManagement = () => {
                                         >
                                             <GetAppIcon/>
                                         </IconButton>
-                                    </div> : <CustomButton text={"upload"}/>
+                                    </div> : isAdmin ? <CustomButton text={"upload"}/> : <h6>not uploaded</h6>
                             )
                         }
                     },
@@ -159,7 +171,7 @@ const OrderManagement = () => {
                                         >
                                             <GetAppIcon/>
                                         </IconButton>
-                                    </div> : <CustomButton text={"upload"}/>
+                                    </div> : isAdmin ? <CustomButton text={"upload"}/> : <h6>not uploaded</h6>
                             )
                         }
                     },
@@ -184,12 +196,16 @@ const OrderManagement = () => {
                                         >
                                             <GetAppIcon/>
                                         </IconButton>
-                                    </div> : <CustomButton text={"upload"}/>
+                                    </div> : isSupplier ? <CustomButton text={"upload"}/> : <h6>not uploaded</h6>
                             )
                         }
 
                     },
-                    {title: "Supplier Approval", field: "supplierApproval", render: (rowData) => {
+                    {
+                        title: "Supplier Approval",
+                        field: "supplierApproval",
+                        hidden: !isSupplier,
+                        render: (rowData) => {
                         return (
                             rowData.supplierApproval === "PENDING" ?
                             <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
@@ -211,7 +227,11 @@ const OrderManagement = () => {
                                 <CancelIcon fontSize={"large"} color={"error"} />
                         )
                         }},
-                    {title: "Dept. Head approval", field: "departmentHeadApproval", render: (rowData) => {
+                    {
+                        title: "Dept. Head approval",
+                        field: "departmentHeadApproval",
+                        hidden: !isDepartmentHead,
+                        render: (rowData) => {
                             return (
                                 rowData.departmentHeadApproval === "PENDING" ?
                                     <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
@@ -235,7 +255,11 @@ const OrderManagement = () => {
                                     <CancelIcon fontSize={"large"} color={"error"} />
                             )
                         }},
-                    {title: "Store manager Approval", field: "storeManagerApproval", render: (rowData) => {
+                    {
+                        title: "Store manager Approval",
+                        field: "storeManagerApproval",
+                        hidden: !isAdmin,
+                        render: (rowData) => {
                             return (
                                 rowData.storeManagerApproval === "PENDING" ?
                                     <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
@@ -258,7 +282,11 @@ const OrderManagement = () => {
                                     <CancelIcon fontSize={"large"}  color={"error"} />
                             )
                         }},
-                    {title: "Procurement Officer Approval", field: "procurementOfficerApproval", render: (rowData) => {
+                    {
+                        title: "Procurement Officer Approval",
+                        field: "procurementOfficerApproval",
+                        hidden: !isAdmin,
+                        render: (rowData) => {
                             return (
                                 rowData.procurementOfficerApproval === "PENDING" ?
                                     <ButtonGroup size={"small"} orientation={"vertical"} variant={"outlined"}>
@@ -284,6 +312,9 @@ const OrderManagement = () => {
                 data={orderManagementObjs}
                 handleDelete={fetchData}
                 setOpenPopup={setOpenPopup}
+                allowAdd={role === "ROLE_ADMIN"}
+                // allowEdit={role === "ROLE_ADMIN"}
+                allowDelete={role === "ROLE_ADMIN"}
             />
             <Popup title={"Manage Order"} openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <FormAddOrderManagementObj handleFormSubmit={handleFormSubmit}/>

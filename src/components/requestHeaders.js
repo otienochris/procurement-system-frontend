@@ -1,6 +1,6 @@
 // domain
-export const apiDomain = "http://192.168.137.1:8080/api/v1";
-// export const apiDomain = "http://localhost:8080/api/v1";
+// export const apiDomain = "http://192.168.137.1:8080/api/v1";
+export const apiDomain = "http://localhost:8080/api/v1";
 
 export const frontEndDomain = "http://192.168.137.1:3000";
 

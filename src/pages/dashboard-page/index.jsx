@@ -1,4 +1,4 @@
-import {Divider, Grid, IconButton, makeStyles, Toolbar,} from "@material-ui/core";
+import {Grid, IconButton, makeStyles, Toolbar,} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import MenuOpenIcon from "@material-ui/icons/MenuOpen";
 import FolderIcon from "@material-ui/icons/Folder";
@@ -6,7 +6,6 @@ import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import PeopleIcon from "@material-ui/icons/People";
 import WebIcon from '@material-ui/icons/Web';
 import AssessmentIcon from '@material-ui/icons/Assessment';
-import Users from "./Users";
 import {
     employeesDomainUrl,
     requestHeaderWithoutBodyAfterAuthentication,
@@ -14,8 +13,9 @@ import {
 } from "../../components/requestHeaders";
 import {useSelector} from "react-redux";
 import Purchases from "./Purchases";
-import Applications from "./Applications";
 import SolicitationManagement from "./SolicitationManagement";
+import Applications from "./Applications";
+import Users from "./Users";
 
 const useStylesIndex = makeStyles((theme) => ({
     navigationArea: {
@@ -52,10 +52,11 @@ const useStylesIndex = makeStyles((theme) => ({
 function Index() {
     const classes = useStylesIndex();
     const token = useSelector((state) => state.token);
+    const role = useSelector(state => state.userDetails.role)
     const [employees, setEmployees] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [departmentHeads, setDepartmentHeads] = useState([]);
-    const [selectedTab, setSelectedTab] = useState(0);
+    const [selectedTab, setSelectedTab] = useState(1);
 
     const handleClick = (value) => {
         setSelectedTab(value);
@@ -87,9 +88,10 @@ function Index() {
     };
 
     useEffect(() => {
-        fetchEmployees(employeesDomainUrl);
-        fetchSuppliers(suppliersDomainUrl);
-        // fetchDepartmentHeads(departmentHeadsUrl);
+        if (role === "ROLE_ADMIN") {
+            fetchEmployees(employeesDomainUrl).then();
+            fetchSuppliers(suppliersDomainUrl).then();
+        }
     }, []);
 
     return (
@@ -99,8 +101,8 @@ function Index() {
                     <IconButton className={classes.menuIconStyle} title="menu">
                         <MenuOpenIcon fontSize="large"/>
                     </IconButton>
-                    <Divider variant={"middle"} light/>
 
+                    {(role === "ROLE_DEPARTMENT_HEAD" || role === "ROLE_ADMIN") &&
                     <IconButton
                         className={classes.otherIconStyle}
                         onClick={() => handleClick(0)}
@@ -108,44 +110,92 @@ function Index() {
                     >
                         <ShoppingBasketIcon/>
                     </IconButton>
+                    }
                     <IconButton
                         className={classes.otherIconStyle}
                         onClick={() => handleClick(1)}
-                        title="Applications"
-                    >
-                        <FolderIcon/>
-                    </IconButton>
-                    <IconButton
-                        className={classes.otherIconStyle}
-                        onClick={() => handleClick(2)}
                         title="Order Management"
                     >
                         <WebIcon/>
                     </IconButton>
+                    {(role === "ROLE_ADMIN" || role === "ROLE_SUPPLIER") && <IconButton
+                        className={classes.otherIconStyle}
+                        onClick={() => handleClick(2)}
+                        title="Applications"
+                    >
+                        <FolderIcon/>
+                    </IconButton>}
 
-                    <IconButton
+                    {role === "ROLE_ADMIN" && <IconButton
                         className={classes.otherIconStyle}
                         onClick={() => handleClick(3)}
                         title="Reports"
                     >
                         <AssessmentIcon/>
-                    </IconButton>
-                    <IconButton
+                    </IconButton>}
+                    {role === "ROLE_ADMIN" && <IconButton
                         className={classes.otherIconStyle}
                         onClick={() => handleClick(4)}
                         title="Users"
                     >
                         <PeopleIcon/>
-                    </IconButton>
+                    </IconButton>}
 
                 </Toolbar>
             </Grid>
             <Grid item xs={10} sm={11} className={classes.backgroundStyle}>
-                {selectedTab === 0 && <Purchases/>}
-                {selectedTab === 1 && <Applications/>}
-                {selectedTab === 2 && <SolicitationManagement/>}
-                {selectedTab === 4 && (
-                    <Users
+                {/*admin view */}
+                {
+                    role === "ROLE_ADMIN" &&
+                    <>
+                        {selectedTab === 0 && <Purchases/>}
+                        {selectedTab === 1 && <SolicitationManagement />}
+                        {selectedTab === 2 && <Applications/>}
+                        {selectedTab === 4 &&
+                        <Users employees={employees} setEmployees={setEmployees} suppliers={suppliers}
+                            setSuppliers={setSuppliers}
+                            departmentHeads={departmentHeads}
+                            setDepartmentHeads={setDepartmentHeads}
+                            customClass={classes} />}
+                    </>
+                }
+
+                {/*department head view*/}
+                {
+                    role === "ROLE_DEPARTMENT_HEAD" &&
+                    <>
+                        {selectedTab === 0 && <Purchases/>}
+                        {selectedTab === 1 && <SolicitationManagement />}
+                    </>
+                }
+
+                {
+                    role === "ROLE_SUPPLIER" &&
+                    <>
+                        {selectedTab === 1 && <SolicitationManagement />}
+                        {selectedTab === 2 && <Applications/>}
+
+                    </>
+                }
+
+                {/*{
+                    ((selectedTab === 0 && role === "ROLE_ADMIN") || (selectedTab === 0 && role === "ROLE_DEPARTMENT_HEAD"))
+                    && <Purchases/>
+                }
+                {
+                    (
+                        ((selectedTab === 1 && role === "ROLE_ADMIN") || (selectedTab === 1 && role === "ROLE_SUPPLIER")) ||
+                        (selectedTab === 1 && role === "ROLE_DEPARTMENT_HEAD")
+                    )
+                    && <SolicitationManagement/>
+                }
+                {
+                    ((selectedTab === 2 && role === "ROLE_ADMIN") || (selectedTab === 2 && role === "ROLE_SUPPLIER"))
+                    && <Applications/>
+                }
+                {
+                    (selectedTab === 4 && role === "ROLE_ADMIN")
+                    && <Users
                         employees={employees}
                         setEmployees={setEmployees}
                         suppliers={suppliers}
@@ -153,8 +203,7 @@ function Index() {
                         departmentHeads={departmentHeads}
                         setDepartmentHeads={setDepartmentHeads}
                         customClass={classes}
-                    />
-                )}
+                    />}*/}
             </Grid>
         </Grid>
     );

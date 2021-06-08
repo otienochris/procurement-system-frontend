@@ -90,8 +90,10 @@ const FormAddContract = (props) => {
     const classes = useStyles();
 
     useEffect(() => {
-        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token, contracts, null, null).then();
-        console.log(applications)
+        // fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token, contracts, null, null).then();
+        fetchData(setSuppliers, setPurchaseOrders, setIsLoading, setSuccessfulFetch, token, null, null, null).then();
+        console.log(applications);
+        console.log(suppliers);
     }, []);
 
     return (
@@ -109,7 +111,9 @@ const FormAddContract = (props) => {
                             error={!!errors.supplierId}
                         >
                             <option value={""}>{}</option>
-                            {suppliers.filter(item => applications.map(item => item.supplierId).includes(item)).map(
+                            {suppliers
+                                .filter(item => applications.map(item => item.supplierId).includes(item))
+                                .map(
                                 kra =>
                                     <option key={kra} value={kra}>
                                         {kra}

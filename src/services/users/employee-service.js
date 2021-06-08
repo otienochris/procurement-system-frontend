@@ -16,4 +16,7 @@ export const getAllEmployees = async (token) =>
     await fetch(employeeDomainUrl , requestHeaderWithoutBodyAfterAuthentication(token))
 
 export const updateEmployee = async (token, id, body) =>
-    await fetch(employeeDomainUrl + "update/" + id, requestHeaderWithJSONBodyAfterAuthentication("PUT", body, token))
+    await fetch(employeeDomainUrl + "update/" + id, requestHeaderWithJSONBodyAfterAuthentication("PUT", body, token));
+
+export const getEmployeeByUsername = async (token, username) => await
+    fetch(employeeDomainUrl + username, requestHeaderWithoutBodyAfterAuthentication(token))
