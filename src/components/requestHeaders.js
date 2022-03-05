@@ -1,8 +1,8 @@
 // domain
 // export const apiDomain = "http://192.168.137.1:8080/api/v1";
-export const apiDomain = "http://localhost:8080/api/v1";
+export const apiDomain = "https://backend-for-procurement-app.herokuapp.com/api/v1";
 
-export const frontEndDomain = "http://192.168.137.1:3000";
+export const frontEndDomain = "https://practical-agnesi-5a2f4b.netlify.app/";
 
 // account management urls
 export const authenticationUrl = apiDomain + "/users/authenticate";
